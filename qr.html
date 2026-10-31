@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generador de QR · Viale Joyas</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <a href="index.html" class="brand"><img src="assets/logo.png" alt="Viale Joyas"></a>
+    </div>
+  </header>
+
+  <main class="container qr-page">
+    <h1>Generador de código QR</h1>
+    <p class="muted">Pega el enlace del sitio (por ejemplo, el de GitHub Pages) y descarga el QR para proyectarlo o imprimirlo.</p>
+
+    <form id="qr-form" class="stack">
+      <label for="qr-url">Enlace del sitio</label>
+      <input id="qr-url" type="url" value="" placeholder="https://tuusuario.github.io/viale-joyas/" required>
+
+      <label for="qr-size">Tamaño (px)</label>
+      <input id="qr-size" type="number" min="128" max="1024" step="32" value="320">
+
+      <button class="btn btn--primary" type="submit">Generar QR</button>
+    </form>
+
+    <div class="qr-output" id="qr-output" aria-live="polite">
+      <div id="qr-canvas"></div>
+      <p class="qr-caption" id="qr-caption"></p>
+      <button class="btn btn--ghost" id="qr-download" type="button" disabled>Descargar PNG</button>
+    </div>
+    <p class="form-msg" id="qr-msg" role="status"></p>
+  </main>
+
+  <script>
+    (function () {
+      const form = document.getElementById('qr-form');
+      const urlInput = document.getElementById('qr-url');
+      const sizeInput = document.getElementById('qr-size');
+      const container = document.getElementById('qr-canvas');
+      const caption = document.getElementById('qr-caption');
+      const msg = document.getElementById('qr-msg');
+      const downloadBtn = document.getElementById('qr-download');
+
+      // Por defecto, usa la dirección donde está alojado el sitio.
+      const base = window.location.href.replace(/qr\.html.*$/, 'index.html');
+      urlInput.value = base;
+
+      function getDataUrl() {
+        const canvas = container.querySelector('canvas');
+        if (canvas) return canvas.toDataURL('image/png');
+        const img = container.querySelector('img');
+        return img ? img.src : null;
+      }
+
+      function generate(e) {
+        if (e) e.preventDefault();
+        msg.textContent = '';
+
+        const url = urlInput.value.trim();
+        const size = Math.min(1024, Math.max(128, parseInt(sizeInput.value, 10) || 320));
+
+        if (!url) {
+          msg.textContent = 'Ingresa un enlace.';
+          return;
+        }
+        if (typeof QRCode === 'undefined') {
+          msg.textContent = 'No se pudo cargar la librería QR. Revisa tu conexión a internet.';
+          return;
+        }
+
+        container.innerHTML = '';
+        new QRCode(container, {
+          text: url,
+          width: size,
+          height: size,
+          colorDark: '#1a1a1a',
+          colorLight: '#ffffff',
+          correctLevel: QRCode.CorrectLevel.M
+        });
+
+        // qrcodejs puede tardar un instante en crear el canvas o la imagen.
+        setTimeout(function () {
+          caption.textContent = url;
+          downloadBtn.disabled = !getDataUrl();
+        }, 50);
+      }
+
+      form.addEventListener('submit', generate);
+
+      downloadBtn.addEventListener('click', function () {
+        const dataUrl = getDataUrl();
+        if (!dataUrl) return;
+        const a = document.createElement('a');
+        a.href = dataUrl;
+        a.download = 'qr-viale-joyas.png';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      });
+
+      generate();
+    })();
+  </script>
+</body>
+</html>
