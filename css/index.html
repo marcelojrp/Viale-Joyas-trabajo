@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Viale Joyas · Joyería de autor</title>
+  <meta name="description" content="Joyería de autor hecha a mano. Aros, collares, anillos, pulseras y esclavas en enchape de oro 18k y plata 925.">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/slider.css">
+</head>
+<body>
+
+  <!-- ===== BARRA PRINCIPAL ===== -->
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <a href="index.html" class="brand" aria-label="Viale Joyas, inicio">
+        <img src="assets/logo.png" alt="Logo Viale Joyas">
+      </a>
+
+      <form class="search" role="search" onsubmit="return false;">
+        <label for="buscador" class="sr-only">Buscar</label>
+        <input id="buscador" type="search" placeholder="Buscar aros, collares, anillos...">
+        <button type="submit" aria-label="Buscar">Buscar</button>
+      </form>
+
+      <nav class="actions" aria-label="Acciones de cuenta">
+        <button class="action" id="btn-wishlist" type="button">
+          <span class="action__icon" aria-hidden="true">&#9825;</span>
+          <span class="action__label">Lista de deseos</span>
+          <span class="badge" id="wish-count">0</span>
+        </button>
+        <button class="action" id="btn-stores" type="button">
+          <span class="action__icon" aria-hidden="true">&#9906;</span>
+          <span class="action__label">Buscar tiendas</span>
+        </button>
+        <button class="action" id="btn-account" type="button">
+          <span class="action__icon" aria-hidden="true">&#9787;</span>
+          <span class="action__label">Crear cuenta</span>
+        </button>
+        <button class="action" id="btn-cart" type="button">
+          <span class="action__icon" aria-hidden="true">&#128717;</span>
+          <span class="action__label">Carrito</span>
+          <span class="badge" id="cart-count">0</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ===== BARRA SECUNDARIA ===== -->
+  <nav class="subbar" aria-label="Categorías">
+    <div class="container subbar__inner">
+      <a href="#festividad" class="subbar__link subbar__link--festive" id="link-festividad">Festividad</a>
+      <a href="#novedades" class="subbar__link">Novedades y destacados</a>
+      <a href="#estilos" class="subbar__link">Estilos de joya</a>
+      <a href="#colorimetria" class="subbar__link">Colorimetría</a>
+      <a href="#temporada" class="subbar__link">Temporada</a>
+      <a href="#faq" class="subbar__link">Preguntas frecuentes</a>
+    </div>
+  </nav>
+
+  <main>
+    <!-- ===== CARRUSEL PRINCIPAL ===== -->
+    <section class="hero-slider" id="festividad" aria-roledescription="carrusel" aria-label="Destacados" tabindex="0">
+      <div class="slides">
+
+        <!-- Diapositiva 1: logo -->
+        <div class="slide is-active" aria-hidden="false">
+          <img class="slide__bg" src="assets/principal.jpg" alt=""
+               onerror="this.onerror=null;this.src='assets/tienda.png';">
+          <div class="slide__content">
+            <div class="slide__logo">
+              <img src="assets/logo.png" alt="Viale Joyas">
+            </div>
+            <p>Joyería de autor hecha a mano</p>
+            <a href="catalogo.html" class="btn btn--primary">Ver catálogo</a>
+          </div>
+        </div>
+
+        <!-- Diapositiva 2: festividad más cercana -->
+        <div class="slide" aria-hidden="true">
+          <img class="slide__bg" src="assets/festividad.jpg" alt=""
+               onerror="this.onerror=null;this.src='assets/tienda.png';">
+          <div class="slide__content">
+            <p class="eyebrow">Festividad más cercana</p>
+            <h1 id="festividad-nombre">Navidad</h1>
+            <p id="festividad-texto">Piezas pensadas para regalar y brillar en la temporada navideña.</p>
+            <p class="countdown" id="festividad-countdown"></p>
+            <a href="#novedades" class="btn btn--primary">Ver regalos</a>
+          </div>
+        </div>
+
+        <!-- Diapositiva 3: colorimetría -->
+        <div class="slide" aria-hidden="true">
+          <img class="slide__bg" src="assets/colorimetria.jpg" alt=""
+               onerror="this.onerror=null;this.src='assets/tienda.png';">
+          <div class="slide__content">
+            <p class="eyebrow">Nuevo</p>
+            <h1>Descubre tu color</h1>
+            <p>Sube una foto y te mostramos las joyas que mejor combinan con tu piel.</p>
+            <a href="colorimetria.html" class="btn btn--primary">Probar con mi foto</a>
+          </div>
+        </div>
+      </div>
+
+      <button class="slider__btn slider__prev" type="button" aria-label="Diapositiva anterior">&#8249;</button>
+      <button class="slider__btn slider__next" type="button" aria-label="Diapositiva siguiente">&#8250;</button>
+
+      <div class="dots" role="group" aria-label="Elegir diapositiva">
+        <button class="dot is-active" type="button" aria-label="Diapositiva 1" aria-current="true"></button>
+        <button class="dot" type="button" aria-label="Diapositiva 2"></button>
+        <button class="dot" type="button" aria-label="Diapositiva 3"></button>
+      </div>
+    </section>
+
+    <!-- ===== NOVEDADES Y DESTACADOS ===== -->
+    <section class="section" id="novedades">
+      <div class="container">
+        <header class="section__header">
+          <h2>Novedades y destacados</h2>
+          <p>Productos de ejemplo. Los precios son referenciales.</p>
+        </header>
+        <div class="grid" id="grid-novedades">
+          <article class="card" data-id="aro-perla" data-nombre="Aros perla dorada" data-precio="18990">
+            <div class="card__img" aria-hidden="true">&#9675;</div>
+            <h3>Aros perla dorada</h3>
+            <p class="card__meta">Enchape oro 18k · Novedad</p>
+            <p class="card__price">$18.990</p>
+            <div class="card__actions">
+              <button class="btn btn--ghost btn-fav" type="button">Favorito</button>
+              <button class="btn btn--primary btn-add" type="button">Agregar</button>
+            </div>
+          </article>
+
+          <article class="card" data-id="esclava-lisa" data-nombre="Esclava lisa" data-precio="24990">
+            <div class="card__img" aria-hidden="true">&#9711;</div>
+            <h3>Esclava lisa</h3>
+            <p class="card__meta">Plata 925 · Destacado</p>
+            <p class="card__price">$24.990</p>
+            <div class="card__actions">
+              <button class="btn btn--ghost btn-fav" type="button">Favorito</button>
+              <button class="btn btn--primary btn-add" type="button">Agregar</button>
+            </div>
+          </article>
+
+          <article class="card" data-id="collar-cristal" data-nombre="Collar cristal" data-precio="21990">
+            <div class="card__img" aria-hidden="true">&#9671;</div>
+            <h3>Collar cristal</h3>
+            <p class="card__meta">Gold filled · Destacado</p>
+            <p class="card__price">$21.990</p>
+            <div class="card__actions">
+              <button class="btn btn--ghost btn-fav" type="button">Favorito</button>
+              <button class="btn btn--primary btn-add" type="button">Agregar</button>
+            </div>
+          </article>
+
+          <article class="card" data-id="anillo-piedra" data-nombre="Anillo piedra natural" data-precio="15990">
+            <div class="card__img" aria-hidden="true">&#9670;</div>
+            <h3>Anillo piedra natural</h3>
+            <p class="card__meta">Plata 925 · Novedad</p>
+            <p class="card__price">$15.990</p>
+            <div class="card__actions">
+              <button class="btn btn--ghost btn-fav" type="button">Favorito</button>
+              <button class="btn btn--primary btn-add" type="button">Agregar</button>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== ESTILOS DE JOYA ===== -->
+    <section class="section section--alt" id="estilos">
+      <div class="container">
+        <header class="section__header">
+          <h2>Estilos de joya</h2>
+          <p>Elige una categoría para ver el catálogo.</p>
+        </header>
+        <div class="styles-grid">
+          <a class="style-tile" href="catalogo.html?categoria=aros">Aros</a>
+          <a class="style-tile" href="catalogo.html?categoria=collares">Collares</a>
+          <a class="style-tile" href="catalogo.html?categoria=anillos">Anillos</a>
+          <a class="style-tile" href="catalogo.html?categoria=pulseras">Pulseras</a>
+          <a class="style-tile" href="catalogo.html?categoria=esclavas">Esclavas</a>
+          <a class="style-tile" href="catalogo.html?categoria=charms">Charms</a>
+          <a class="style-tile" href="catalogo.html?categoria=brazaletes">Brazaletes</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== COLORIMETRÍA (placeholder, se construye en la siguiente parte) ===== -->
+    <section class="section" id="colorimetria">
+      <div class="container">
+        <header class="section__header">
+          <h2>Descubre tu color</h2>
+          <p>Sube una foto y te sugerimos joyas según el subtono de tu piel. Se analiza en tu navegador: tu foto no se envía a ningún servidor.</p>
+        </header>
+        <a href="colorimetria.html" class="btn btn--primary">Probar con mi foto</a>
+      </div>
+    </section>
+
+    <!-- ===== TEMPORADA / NEWSLETTER ===== -->
+    <section class="section section--alt" id="temporada">
+      <div class="container newsletter">
+        <div>
+          <h2>Información de temporada</h2>
+          <p>Recibe novedades, regalos sugeridos y ofertas antes que nadie.</p>
+        </div>
+        <form class="newsletter__form" id="form-newsletter">
+          <label for="nl-nombre">Nombre</label>
+          <input id="nl-nombre" name="nombre" type="text" required>
+
+          <label for="nl-email">Correo</label>
+          <input id="nl-email" name="email" type="email" required>
+
+          <fieldset class="prefs">
+            <legend>¿Qué te interesa?</legend>
+            <label><input type="checkbox" name="interes" value="navidad"> Navidad</label>
+            <label><input type="checkbox" name="interes" value="novedades"> Novedades</label>
+            <label><input type="checkbox" name="interes" value="ofertas"> Ofertas</label>
+          </fieldset>
+
+          <button class="btn btn--primary" type="submit">Suscribirme</button>
+          <p class="form-msg" id="nl-msg" role="status"></p>
+        </form>
+      </div>
+    </section>
+
+    <!-- ===== ARTÍCULO FICTICIO ===== -->
+    <section class="section" id="articulo">
+      <div class="container article">
+        <p class="eyebrow">Artículo ficticio · Proyecto universitario</p>
+        <h2>Navidad en primavera: joyas para brillar en la temporada</h2>
+        <p>Llegar a diciembre con sol y calor cambia la forma de elegir una joya. Las piezas livianas y brillantes funcionan mejor con vestidos de verano y reuniones al aire libre.</p>
+        <h3>Aros de perla dorada</h3>
+        <p>Combinan con casi cualquier look y son un regalo clásico para mamá, hermanas o amigas. Su enchape de oro 18k da un acabado cálido sin perder ligereza.</p>
+        <h3>Esclavas lisas en plata 925</h3>
+        <p>Ideales para quien prefiere un estilo minimalista. Se pueden combinar entre sí para armar un conjunto propio.</p>
+        <h3>Collares de cristal</h3>
+        <p>Dan color a un escote sencillo y se ven bien en cenas de fin de año.</p>
+        <p class="muted">Este texto es ficticio y se usa solo como ejemplo de contenido editorial.</p>
+      </div>
+    </section>
+
+    <!-- ===== PREGUNTAS FRECUENTES ===== -->
+    <section class="section" id="faq">
+      <div class="container">
+        <header class="section__header">
+          <h2>Preguntas frecuentes</h2>
+        </header>
+        <div class="faq">
+          <details>
+            <summary>¿Qué garantía tienen las joyas?</summary>
+            <p>Todas las piezas cuentan con la garantía legal de 6 meses desde la compra.</p>
+          </details>
+          <details>
+            <summary>¿De qué materiales están hechas?</summary>
+            <p>Trabajamos enchape de oro 18k, plata 925, gold filled y piedras naturales. Cada ficha indica el material exacto.</p>
+          </details>
+          <details>
+            <summary>¿Las piezas son hipoalergénicas?</summary>
+            <p>Los baños en oro y las piezas en plata 925 son libres de níquel. Si tienes una sensibilidad específica, consulta antes de comprar.</p>
+          </details>
+          <details>
+            <summary>¿Puedo cambiar una pieza?</summary>
+            <p>Sí, dentro de los plazos informados en el momento de la compra y con el comprobante correspondiente.</p>
+          </details>
+          <details>
+            <summary>¿Cómo sé si una pieza está disponible en tienda?</summary>
+            <p>En cada producto aparece la disponibilidad por tienda. Puedes revisar también la sección "Buscar tiendas".</p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <img src="assets/logo.png" alt="Viale Joyas" class="footer__logo">
+      <p>Joyería de autor hecha a mano.</p>
+      <p class="muted">Proyecto académico con datos de ejemplo. No es el sitio oficial de la marca.</p>
+      <a href="qr.html">Generar código QR del sitio</a>
+    </div>
+  </footer>
+
+  <!-- ===== DIÁLOGO: BUSCAR TIENDAS ===== -->
+  <dialog id="dlg-stores" class="dialog">
+    <form method="dialog" class="dialog__close-wrap"><button class="dialog__close" aria-label="Cerrar">&times;</button></form>
+    <h2>Nuestras tiendas</h2>
+    <ul class="store-list">
+      <li><strong>Vivo Los Trapenses</strong><span>Mall Vivo Los Trapenses</span></li>
+      <li><strong>MUT</strong><span>Mercado Urbano Tobalaba</span></li>
+      <li><strong>Espacio Urbano La Dehesa</strong><span>Espacio Urbano La Dehesa</span></li>
+      <li><strong>Pueblo del Inglés</strong><span>Pueblo del Inglés, local</span></li>
+    </ul>
+    <p class="muted">Direcciones y horarios de ejemplo.</p>
+  </dialog>
+
+  <!-- ===== DIÁLOGO: CREAR CUENTA (simulado) ===== -->
+  <dialog id="dlg-account" class="dialog">
+    <form method="dialog" class="dialog__close-wrap"><button class="dialog__close" aria-label="Cerrar">&times;</button></form>
+    <h2>Crear cuenta</h2>
+    <form id="form-account" class="stack">
+      <label for="acc-nombre">Nombre</label>
+      <input id="acc-nombre" type="text" required>
+      <label for="acc-email">Correo</label>
+      <input id="acc-email" type="email" required>
+      <label for="acc-pass">Contraseña</label>
+      <input id="acc-pass" type="password" minlength="6" required>
+      <button class="btn btn--primary" type="submit">Crear cuenta</button>
+      <p class="muted">Simulado: los datos se guardan solo en este navegador.</p>
+    </form>
+  </dialog>
+
+  <!-- ===== DIÁLOGO: LISTA DE DESEOS Y CARRITO ===== -->
+  <dialog id="dlg-list" class="dialog">
+    <form method="dialog" class="dialog__close-wrap"><button class="dialog__close" aria-label="Cerrar">&times;</button></form>
+    <h2 id="dlg-list-title">Lista</h2>
+    <ul class="item-list" id="dlg-list-items"></ul>
+    <p class="item-total" id="dlg-list-total"></p>
+    <p class="muted">Guardado en este navegador (localStorage).</p>
+  </dialog>
+
+  <script src="js/main.js"></script>
+  <script src="js/slider.js"></script>
+</body>
+</html>

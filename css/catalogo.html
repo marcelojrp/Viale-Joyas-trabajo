@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catálogo · Viale Joyas</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/catalogo.css">
+</head>
+<body>
+
+  <!-- ===== BARRA PRINCIPAL ===== -->
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <a href="index.html" class="brand" aria-label="Viale Joyas, inicio">
+        <img src="assets/logo.png" alt="Logo Viale Joyas">
+      </a>
+
+      <form class="search" id="form-search" role="search">
+        <label for="buscador" class="sr-only">Buscar</label>
+        <input id="buscador" type="search" placeholder="Buscar aros, collares, anillos...">
+        <button type="submit" aria-label="Buscar">Buscar</button>
+      </form>
+
+      <nav class="actions" aria-label="Acciones de cuenta">
+        <button class="action" id="btn-wishlist" type="button">
+          <span class="action__icon" aria-hidden="true">&#9825;</span>
+          <span class="action__label">Lista de deseos</span>
+          <span class="badge" id="wish-count">0</span>
+        </button>
+        <button class="action" id="btn-stores" type="button">
+          <span class="action__icon" aria-hidden="true">&#9906;</span>
+          <span class="action__label">Buscar tiendas</span>
+        </button>
+        <button class="action" id="btn-account" type="button">
+          <span class="action__icon" aria-hidden="true">&#9787;</span>
+          <span class="action__label">Crear cuenta</span>
+        </button>
+        <button class="action" id="btn-cart" type="button">
+          <span class="action__icon" aria-hidden="true">&#128717;</span>
+          <span class="action__label">Carrito</span>
+          <span class="badge" id="cart-count">0</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ===== BARRA SECUNDARIA ===== -->
+  <nav class="subbar" aria-label="Categorías">
+    <div class="container subbar__inner">
+      <a href="index.html#festividad" class="subbar__link subbar__link--festive">Festividad</a>
+      <a href="index.html#novedades" class="subbar__link">Novedades y destacados</a>
+      <a href="index.html#estilos" class="subbar__link">Estilos de joya</a>
+      <a href="index.html#colorimetria" class="subbar__link">Colorimetría</a>
+      <a href="index.html#temporada" class="subbar__link">Temporada</a>
+      <a href="index.html#faq" class="subbar__link">Preguntas frecuentes</a>
+    </div>
+  </nav>
+
+  <main class="container">
+    <header class="page-head">
+      <p class="breadcrumb"><a href="index.html">Inicio</a> / <span id="crumb">Catálogo</span></p>
+      <h1 id="titulo">Todas las joyas</h1>
+      <p class="muted" id="conteo"></p>
+    </header>
+
+    <nav class="chips" id="chips" aria-label="Filtrar por categoría"></nav>
+
+    <div class="toolbar">
+      <span class="muted" id="resumen"></span>
+      <label>
+        <span class="sr-only">Ordenar</span>
+        <select id="orden">
+          <option value="relevancia">Destacados primero</option>
+          <option value="precio-asc">Precio: menor a mayor</option>
+          <option value="precio-desc">Precio: mayor a menor</option>
+          <option value="nombre">Nombre A-Z</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="grid" id="grid"></div>
+    <p class="empty" id="vacio" hidden>No encontramos productos con esa búsqueda.</p>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <img src="assets/logo.png" alt="Viale Joyas" class="footer__logo">
+      <p>Joyería de autor hecha a mano.</p>
+      <p class="muted">Proyecto académico con datos de ejemplo. No es el sitio oficial de la marca.</p>
+    </div>
+  </footer>
+
+  <!-- ===== DIÁLOGOS ===== -->
+  <dialog id="dlg-stores" class="dialog">
+    <form method="dialog" class="dialog__close-wrap"><button class="dialog__close" aria-label="Cerrar">&times;</button></form>
+    <h2>Nuestras tiendas</h2>
+    <ul class="store-list">
+      <li><strong>Vivo Los Trapenses</strong><span>Mall Vivo Los Trapenses</span></li>
+      <li><strong>MUT</strong><span>Mercado Urbano Tobalaba</span></li>
+      <li><strong>Espacio Urbano La Dehesa</strong><span>Espacio Urbano La Dehesa</span></li>
+      <li><strong>Pueblo del Inglés</strong><span>Pueblo del Inglés, local</span></li>
+    </ul>
+    <p class="muted">Direcciones y horarios de ejemplo.</p>
+  </dialog>
+
+  <dialog id="dlg-account" class="dialog">
+    <form method="dialog" class="dialog__close-wrap"><button class="dialog__close" aria-label="Cerrar">&times;</button></form>
+    <h2>Crear cuenta</h2>
+    <form id="form-account" class="stack">
+      <label for="acc-nombre">Nombre</label>
+      <input id="acc-nombre" type="text" required>
+      <label for="acc-email">Correo</label>
+      <input id="acc-email" type="email" required>
+      <label for="acc-pass">Contraseña</label>
+      <input id="acc-pass" type="password" minlength="6" required>
+      <button class="btn btn--primary" type="submit">Crear cuenta</button>
+      <p class="muted">Simulado: los datos se guardan solo en este navegador.</p>
+    </form>
+  </dialog>
+
+  <dialog id="dlg-list" class="dialog">
+    <form method="dialog" class="dialog__close-wrap"><button class="dialog__close" aria-label="Cerrar">&times;</button></form>
+    <h2 id="dlg-list-title">Lista</h2>
+    <ul class="item-list" id="dlg-list-items"></ul>
+    <p class="item-total" id="dlg-list-total"></p>
+    <p class="muted">Guardado en este navegador.</p>
+  </dialog>
+
+  <script src="js/productos.js"></script>
+  <script src="js/shared.js"></script>
+  <script>
+    (function () {
+      const V = window.Viale;
+      const categoria = V.getParam('categoria') || 'todas';
+      const q = (V.getParam('q') || '').toLowerCase().trim();
+      const grid = document.getElementById('grid');
+
+      // Título y migas de pan
+      const cat = CATEGORIAS.find((c) => c.id === categoria);
+      const titulo = cat ? cat.nombre : (q ? `Resultados para "${V.getParam('q')}"` : 'Todas las joyas');
+      document.getElementById('titulo').textContent = titulo;
+      document.title = titulo + ' · Viale Joyas';
+      document.getElementById('crumb').textContent = cat ? cat.nombre : 'Catálogo';
+
+      // Chips de categorías
+      const chips = document.getElementById('chips');
+      const todos = [{ id: 'todas', nombre: 'Todas' }, ...CATEGORIAS];
+      chips.innerHTML = todos.map((c) => {
+        const href = c.id === 'todas' ? 'catalogo.html' : `catalogo.html?categoria=${c.id}`;
+        const active = c.id === categoria ? ' is-active' : '';
+        return `<a class="chip${active}" href="${href}">${c.nombre}</a>`;
+      }).join('');
+
+      // Filtrado base
+      let base = PRODUCTOS.filter((p) => {
+        const okCat = categoria === 'todas' || p.categoria === categoria;
+        const okQ = !q || p.nombre.toLowerCase().includes(q)
+          || p.material.toLowerCase().includes(q)
+          || p.categoria.includes(q);
+        return okCat && okQ;
+      });
+
+      const orden = document.getElementById('orden');
+      function ordenar(lista) {
+        const copia = [...lista];
+        switch (orden.value) {
+          case 'precio-asc':  return copia.sort((a, b) => a.precio - b.precio);
+          case 'precio-desc': return copia.sort((a, b) => b.precio - a.precio);
+          case 'nombre':      return copia.sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
+          default:            return copia.sort((a, b) => b.etiquetas.length - a.etiquetas.length);
+        }
+      }
+
+      function render() {
+        const lista = ordenar(base);
+        document.getElementById('conteo').textContent =
+          `${lista.length} ${lista.length === 1 ? 'producto' : 'productos'}`;
+        document.getElementById('resumen').textContent = q ? `Búsqueda: "${V.getParam('q')}"` : '';
+        grid.innerHTML = lista.map((p) => V.cardHTML(p)).join('');
+        document.getElementById('vacio').hidden = lista.length > 0;
+      }
+
+      orden.addEventListener('change', render);
+      V.bindCards(grid);
+      V.bindHeader();
+      render();
+    })();
+  </script>
+</body>
+</html>
