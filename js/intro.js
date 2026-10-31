@@ -1,17 +1,16 @@
 /* Animación de entrada: caja de anillo → anillo de propuesta → logo.
-   Solo en escritorio, una vez por sesión del navegador, y sin movimiento si el
-   usuario tiene activada la opción de reducir animaciones. */
+   Escritorio: unos 4 s. Celular: unos 3 s. Una vez por sesión del navegador,
+   y sin movimiento si el usuario tiene activada la opción de reducir animaciones. */
 (function () {
   const KEY = 'viale_intro_seen';
-  const DURACION_MS = 4300;
-
-  const esEscritorio = window.matchMedia('(min-width: 801px)').matches;
+  const esCelular = window.matchMedia('(max-width: 800px)').matches;
+  const DURACION_MS = esCelular ? 3300 : 4300;
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   let yaVista = false;
   try { yaVista = sessionStorage.getItem(KEY) === '1'; } catch (e) { /* sin acceso a sessionStorage */ }
 
-  if (!esEscritorio || reduce || yaVista) return;
+  if (reduce || yaVista) return;
 
   try { sessionStorage.setItem(KEY, '1'); } catch (e) { /* ignorar */ }
 
