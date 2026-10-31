@@ -1,0 +1,159 @@
+/* ===== Animación de entrada (solo escritorio) =====
+   Caja de anillo que se abre, aparece el anillo de propuesta y luego el logo.
+   Dura unos 4 segundos. js/intro.js decide si se muestra. */
+
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: var(--cream);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  cursor: pointer;
+  animation: introOut .6s ease 3.6s forwards;
+}
+
+.intro__stage {
+  position: relative;
+  width: 320px;
+  height: 320px;
+  perspective: 700px;
+}
+
+/* Caja */
+.intro__box {
+  position: absolute;
+  left: 50%;
+  top: 150px;
+  width: 200px;
+  height: 120px;
+  transform: translateX(-50%);
+  animation: boxIn .5s ease .2s both;
+}
+
+.intro__base {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 40px;
+  bottom: 0;
+  background: #1a1a1a;
+  border: 2px solid var(--gold);
+  border-radius: 6px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, .18);
+}
+
+.intro__lid {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 40px;
+  background: #262626;
+  border: 2px solid var(--gold);
+  border-radius: 6px 6px 0 0;
+  transform-origin: 50% 100%;
+  animation: lidOpen .8s cubic-bezier(.45, .05, .25, 1) .9s forwards;
+}
+
+/* Interior de terciopelo, visible al abrir la caja */
+.intro__box::after {
+  content: "";
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  top: 46px;
+  height: 14px;
+  border-radius: 4px;
+  background: var(--gold-light);
+  opacity: 0;
+  animation: fadeIn .4s ease 1.3s forwards;
+}
+
+/* Anillo de propuesta */
+.intro__ring {
+  position: absolute;
+  left: 50%;
+  top: 95px;
+  width: 90px;
+  height: 90px;
+  margin-left: -45px;
+  opacity: 0;
+  animation:
+    ringRise 1.1s cubic-bezier(.2, .7, .3, 1) 1.5s both,
+    ringFade .5s ease 2.8s forwards;
+}
+
+/* Destellos alrededor del anillo */
+.sparkle {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  background: var(--gold);
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+  opacity: 0;
+  animation: sparkle 1s ease 2.1s both;
+}
+.sparkle--1 { left: 58px;  top: 70px; }
+.sparkle--2 { left: 230px; top: 92px; animation-delay: 2.3s; }
+.sparkle--3 { left: 80px;  top: 170px; animation-delay: 2.5s; }
+
+/* Logo final */
+.intro__logo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 220px;
+  margin: -90px 0 0 -110px;
+  opacity: 0;
+  animation: logoIn .8s ease 2.7s forwards;
+}
+
+@keyframes boxIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+@keyframes lidOpen {
+  from { transform: rotateX(0deg); }
+  to   { transform: rotateX(-105deg); }
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+@keyframes ringRise {
+  from { opacity: 0; transform: translateY(70px) scale(.8); }
+  40%  { opacity: 1; }
+  to   { opacity: 1; transform: translateY(-40px) scale(1); }
+}
+
+@keyframes ringFade {
+  to { opacity: 0; }
+}
+
+@keyframes sparkle {
+  0%   { opacity: 0; transform: scale(.2) rotate(0deg); }
+  50%  { opacity: 1; transform: scale(1) rotate(45deg); }
+  100% { opacity: 0; transform: scale(.4) rotate(90deg); }
+}
+
+@keyframes logoIn {
+  from { opacity: 0; transform: scale(.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes introOut {
+  to { opacity: 0; visibility: hidden; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro { display: none; }
+}
+
+@media (max-width: 800px) {
+  .intro { display: none; }
+}
