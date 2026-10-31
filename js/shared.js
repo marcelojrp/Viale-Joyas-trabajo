@@ -8,6 +8,7 @@
   V.$ = (sel, root = document) => root.querySelector(sel);
   V.$$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
   V.fmt = (n) => '$' + Number(n).toLocaleString('es-CL');
+  V.heartSVG = (on) => `<svg viewBox="0 0 24 24" width="20" height="20" fill="${on ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M12 20.5s-7.5-4.4-9.3-8.9C1.6 8.4 3.5 5 7 5c2.2 0 3.6 1.2 5 3 1.4-1.8 2.8-3 5-3 3.5 0 5.4 3.4 4.3 6.6-1.8 4.5-9.3 8.9-9.3 8.9z"/></svg>`;
   V.getParam = (name) => new URLSearchParams(window.location.search).get(name);
 
   /* ---------- Almacenamiento ---------- */
@@ -53,6 +54,30 @@
     if (c) c.textContent = V.getCart().reduce((s, i) => s + i.qty, 0);
   };
 
+  /* ---------- Quitar y cambiar cantidades ---------- */
+  const mkBtn = (txt, fn) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'mini-btn';
+    b.textContent = txt;
+    b.addEventListener('click', fn);
+    return b;
+  };
+
+  V.removeItem = (type, id) => {
+    if (type === 'cart') V.set('cart', V.getCart().filter((c) => c.id !== id));
+    else V.set('wishlist', V.getWishlist().filter((w) => w.id !== id));
+    V.updateCounters();
+  };
+
+  V.changeQty = (id, delta) => {
+    const cart = V.getCart()
+      .map((c) => (c.id === id ? { ...c, qty: c.qty + delta } : c))
+      .filter((c) => c.qty > 0);
+    V.set('cart', cart);
+    V.updateCounters();
+  };
+
   /* ---------- Disponibilidad ---------- */
   V.estado = (n) => {
     if (n === 0) return { cls: 'st-agotado', txt: 'Agotado' };
@@ -67,13 +92,14 @@
   V.cardHTML = (p) => `
     <article class="card">
       <a class="card__link" href="producto.html?id=${p.id}">
-        <div class="card__img" aria-hidden="true">${ICONOS[p.categoria] || '◇'}</div>
+        <img class="card__photo" src="assets/categorias/${p.categoria}.svg" alt="">
         <h3>${p.nombre}</h3>
       </a>
       <p class="card__meta">${p.material}</p>
       <div class="card__tags">${V.tagsHTML(p)}</div>
       <p class="card__price">${V.fmt(p.precio)}</p>
       <div class="card__actions">
+        <button class="heart-btn" type="button" data-id="${p.id}" aria-pressed="${V.isWished(p.id)}" aria-label="${V.isWished(p.id) ? 'Quitar de favoritos' : 'Agregar a favoritos'}">${V.heartSVG(V.isWished(p.id))}</button>
         <button class="btn btn--primary btn-add" type="button" data-id="${p.id}">Agregar</button>
       </div>
     </article>`;
@@ -81,6 +107,17 @@
   // Delegación de eventos para los botones "Agregar" dentro de un contenedor
   V.bindCards = (root) => {
     root.addEventListener('click', (e) => {
+      const heart = e.target.closest('.heart-btn');
+      if (heart) {
+        const prod = PRODUCTOS.find((x) => x.id === heart.dataset.id);
+        if (prod) {
+          const on = V.toggleWish(prod);
+          heart.innerHTML = V.heartSVG(on);
+          heart.setAttribute('aria-pressed', String(on));
+          heart.setAttribute('aria-label', on ? 'Quitar de favoritos' : 'Agregar a favoritos');
+        }
+        return;
+      }
       const btn = e.target.closest('.btn-add');
       if (!btn) return;
       const p = PRODUCTOS.find((x) => x.id === btn.dataset.id);
@@ -115,7 +152,16 @@
         const price = document.createElement('strong');
         name.textContent = isCart ? `${i.nombre} × ${i.qty}` : i.nombre;
         price.textContent = V.fmt(isCart ? i.precio * i.qty : i.precio);
-        li.append(name, price);
+        const acciones = document.createElement('span');
+        acciones.className = 'item-actions';
+        if (isCart) {
+          acciones.append(
+            mkBtn('−', () => { V.changeQty(i.id, -1); V.renderList(type); }),
+            mkBtn('+', () => { V.changeQty(i.id, 1); V.renderList(type); })
+          );
+        }
+        acciones.append(mkBtn('Quitar', () => { V.removeItem(type, i.id); V.renderList(type); }));
+        li.append(name, price, acciones);
         ul.appendChild(li);
       });
       if (isCart) {
