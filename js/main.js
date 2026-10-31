@@ -1,126 +1,49 @@
-/* Viale Joyas · Barras principal y secundaria
-   Todo se guarda en localStorage (simulado, sin servidor). */
+/* Página principal: festividad, novedades, newsletter.
+   Usa las funciones compartidas de shared.js (favoritos, carrito, diálogos). */
 (function () {
   'use strict';
 
+  const V = window.Viale;
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
-  const fmt = (n) => '$' + Number(n).toLocaleString('es-CL');
 
-  /* ---------- Almacenamiento ---------- */
-  const store = {
-    get(key, fallback) {
-      try {
-        const v = localStorage.getItem('viale_' + key);
-        return v ? JSON.parse(v) : fallback;
-      } catch (e) { return fallback; }
-    },
-    set(key, value) {
-      try { localStorage.setItem('viale_' + key, JSON.stringify(value)); } catch (e) { /* sin acceso */ }
-    }
-  };
+  /* ---------- Barra principal (buscador, cuenta, tiendas, listas) ---------- */
+  V.bindHeader();
 
-  let wishlist = store.get('wishlist', []);
-  let cart = store.get('cart', []);
+  /* ---------- Novedades: ficha al hacer clic, favoritos y carrito ---------- */
+  $$('#grid-novedades .card').forEach((card) => {
+    const id = card.dataset.id;
+    const p = PRODUCTOS.find((x) => x.id === id);
+    if (!p) return;
 
-  /* ---------- Contadores ---------- */
-  function updateCounters() {
-    $('#wish-count').textContent = wishlist.length;
-    $('#cart-count').textContent = cart.reduce((s, i) => s + i.qty, 0);
-  }
-
-  /* ---------- Favoritos y carrito ---------- */
-  function productFromCard(card) {
-    return {
-      id: card.dataset.id,
-      nombre: card.dataset.nombre,
-      precio: Number(card.dataset.precio)
-    };
-  }
-
-  $$('.card').forEach((card) => {
-    const p = productFromCard(card);
-
-    $('.btn-fav', card).addEventListener('click', () => {
-      const exists = wishlist.some((w) => w.id === p.id);
-      wishlist = exists ? wishlist.filter((w) => w.id !== p.id) : [...wishlist, p];
-      store.set('wishlist', wishlist);
-      $('.btn-fav', card).textContent = exists ? 'Favorito' : 'En favoritos';
-      updateCounters();
+    // Clic en la foto o el nombre abre la ficha del producto
+    $$('.card__photo, h3', card).forEach((el) => {
+      el.style.cursor = 'pointer';
+      el.addEventListener('click', () => { window.location.href = 'producto.html?id=' + id; });
     });
 
-    $('.btn-add', card).addEventListener('click', () => {
-      const item = cart.find((c) => c.id === p.id);
-      if (item) item.qty += 1;
-      else cart.push({ ...p, qty: 1 });
-      store.set('cart', cart);
-      updateCounters();
-    });
+    const fav = $('.btn-fav', card);
+    const add = $('.btn-add', card);
 
-    // Marcar el estado inicial del botón de favorito
-    if (wishlist.some((w) => w.id === p.id)) $('.btn-fav', card).textContent = 'En favoritos';
-  });
-
-  /* ---------- Diálogos ---------- */
-  function openDialog(id) {
-    const dlg = document.getElementById(id);
-    if (dlg && typeof dlg.showModal === 'function') dlg.showModal();
-  }
-
-  function openList(type) {
-    const isCart = type === 'cart';
-    const items = isCart ? cart : wishlist;
-    $('#dlg-list-title').textContent = isCart ? 'Tu carrito' : 'Lista de deseos';
-    const ul = $('#dlg-list-items');
-    ul.innerHTML = '';
-
-    if (items.length === 0) {
-      ul.innerHTML = '<li class="muted">Aún no hay productos.</li>';
-      $('#dlg-list-total').textContent = '';
-    } else {
-      items.forEach((i) => {
-        const li = document.createElement('li');
-        const label = isCart ? `${i.nombre} × ${i.qty}` : i.nombre;
-        const price = isCart ? fmt(i.precio * i.qty) : fmt(i.precio);
-        li.innerHTML = `<span></span><strong></strong>`;
-        li.firstChild.textContent = label;
-        li.lastChild.textContent = price;
-        ul.appendChild(li);
-      });
-      $('#dlg-list-total').textContent = isCart
-        ? 'Total: ' + fmt(cart.reduce((s, i) => s + i.precio * i.qty, 0))
-        : '';
+    function syncFav() {
+      const on = V.isWished(id);
+      fav.innerHTML = V.heartSVG(on);
+      fav.setAttribute('aria-pressed', String(on));
+      fav.setAttribute('aria-label', on ? 'Quitar de favoritos' : 'Agregar a favoritos');
     }
-    openDialog('dlg-list');
-  }
+    fav.addEventListener('click', () => { V.toggleWish(p); syncFav(); });
+    syncFav();
 
-  $('#btn-wishlist').addEventListener('click', () => openList('wish'));
-  $('#btn-cart').addEventListener('click', () => openList('cart'));
-  $('#btn-stores').addEventListener('click', () => openDialog('dlg-stores'));
-  $('#btn-account').addEventListener('click', () => openDialog('dlg-account'));
-
-  // Cerrar al hacer clic fuera del contenido del diálogo
-  $$('dialog').forEach((dlg) => {
-    dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+    add.addEventListener('click', () => {
+      V.addToCart(p);
+      add.textContent = 'Agregado ✓';
+      setTimeout(() => { add.textContent = 'Agregar'; }, 1200);
+    });
   });
-
-  /* ---------- Crear cuenta (simulado) ---------- */
-  $('#form-account').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const user = {
-      nombre: $('#acc-nombre').value.trim(),
-      email: $('#acc-email').value.trim()
-    };
-    store.set('user', user);
-    $('#dlg-account').close();
-    $('#btn-account .action__label').textContent = 'Hola, ' + user.nombre.split(' ')[0];
-    e.target.reset();
-  });
-
-  const savedUser = store.get('user', null);
-  if (savedUser) $('#btn-account .action__label').textContent = 'Hola, ' + savedUser.nombre.split(' ')[0];
 
   /* ---------- Newsletter (simulado) ---------- */
+  const store = { get: (k, f) => V.get(k, f), set: (k, v) => V.set(k, v) };
+
   $('#form-newsletter').addEventListener('submit', (e) => {
     e.preventDefault();
     const intereses = $$('input[name="interes"]:checked').map((c) => c.value);
@@ -180,5 +103,4 @@
   }
 
   renderFestividad();
-  updateCounters();
 })();
