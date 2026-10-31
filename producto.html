@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Producto · Viale Joyas</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/catalogo.css">
+</head>
+<body>
+
+  <!-- ===== BARRA PRINCIPAL ===== -->
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <a href="index.html" class="brand" aria-label="Viale Joyas, inicio">
+        <img src="assets/logo.png" alt="Logo Viale Joyas">
+      </a>
+
+      <form class="search" id="form-search" role="search">
+        <label for="buscador" class="sr-only">Buscar</label>
+        <input id="buscador" type="search" placeholder="Buscar aros, collares, anillos...">
+        <button type="submit" aria-label="Buscar">Buscar</button>
+      </form>
+
+      <nav class="actions" aria-label="Acciones de cuenta">
+        <button class="action" id="btn-wishlist" type="button">
+          <span class="action__icon" aria-hidden="true">&#9825;</span>
+          <span class="action__label">Lista de deseos</span>
+          <span class="badge" id="wish-count">0</span>
+        </button>
+        <button class="action" id="btn-stores" type="button">
+          <span class="action__icon" aria-hidden="true">&#9906;</span>
+          <span class="action__label">Buscar tiendas</span>
+        </button>
+        <button class="action" id="btn-account" type="button">
+          <span class="action__icon" aria-hidden="true">&#9787;</span>
+          <span class="action__label">Crear cuenta</span>
+        </button>
+        <button class="action" id="btn-cart" type="button">
+          <span class="action__icon" aria-hidden="true">&#128717;</span>
+          <span class="action__label">Carrito</span>
+          <span class="badge" id="cart-count">0</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ===== BARRA SECUNDARIA ===== -->
+  <nav class="subbar" aria-label="Categorías">
+    <div class="container subbar__inner">
+      <a href="index.html#festividad" class="subbar__link subbar__link--festive">Festividad</a>
+      <a href="index.html#novedades" class="subbar__link">Novedades y destacados</a>
+      <a href="index.html#estilos" class="subbar__link">Estilos de joya</a>
+      <a href="index.html#colorimetria" class="subbar__link">Colorimetría</a>
+      <a href="index.html#temporada" class="subbar__link">Temporada</a>
+      <a href="index.html#faq" class="subbar__link">Preguntas frecuentes</a>
+    </div>
+  </nav>
+
+  <main class="container">
+    <!-- Contenido que se llena con JavaScript -->
+    <section id="producto" hidden>
+      <p class="breadcrumb">
+        <a href="index.html">Inicio</a> /
+        <a id="crumb-cat" href="catalogo.html">Catálogo</a> /
+        <span id="crumb-nombre"></span>
+      </p>
+
+      <div class="product">
+        <div class="product__img" id="p-img" aria-hidden="true"></div>
+
+        <div>
+          <div class="card__tags" id="p-tags"></div>
+          <h1 id="p-nombre"></h1>
+          <p class="card__meta" id="p-material"></p>
+          <p class="card__price product__price" id="p-precio"></p>
+          <p id="p-desc"></p>
+
+          <div class="product__buy">
+            <button class="btn btn--primary" id="p-add" type="button">Agregar al carrito</button>
+            <button class="btn btn--ghost" id="p-fav" type="button">Lista de deseos</button>
+          </div>
+
+          <ul class="info-list">
+            <li>Garantía legal de 6 meses desde la compra.</li>
+            <li>Cambios dentro de los plazos informados en tienda.</li>
+            <li>Para saber si una pieza es adecuada para tu piel, consulta antes de comprar.</li>
+          </ul>
+        </div>
+      </div>
+
+      <section class="stock-section" aria-labelledby="stock-titulo">
+        <h2 id="stock-titulo">Disponibilidad por tienda</h2>
+        <p class="muted" id="stock-resumen"></p>
+        <table class="stock-table">
+          <thead>
+            <tr><th>Tienda</th><th>Dirección</th><th>Estado</th></tr>
+          </thead>
+          <tbody id="stock-body"></tbody>
+        </table>
+        <p class="muted">Existencias de ejemplo. Se actualizan manualmente en esta versión.</p>
+      </section>
+
+      <section class="related" aria-labelledby="rel-titulo">
+        <h2 id="rel-titulo">También te puede gustar</h2>
+        <div class="grid" id="relacionados"></div>
+      </section>
+    </section>
+
+    <section id="no-encontrado" class="empty" hidden>
+      <h1>Producto no encontrado</h1>
+      <p>Revisa el catálogo para ver las piezas disponibles.</p>
+      <a class="btn btn--primary" href="catalogo.html">Ir al catálogo</a>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <img src="assets/logo.png" alt="Viale Joyas" class="footer__logo">
+      <p>Joyería de autor hecha a mano.</p>
+      <p class="muted">Proyecto académico con datos de ejemplo. No es el sitio oficial de la marca.</p>
+    </div>
+  </footer>
+
+  <!-- ===== DIÁLOGOS ===== -->
+  <dialog id="dlg-stores" class="dialog">
+    <form method="dialog" class="dialog__close-wrap"><button class="dialog__close" aria-label="Cerrar">&times;</button></form>
+    <h2>Nuestras tiendas</h2>
+    <ul class="store-list">
+      <li><strong>Vivo Los Trapenses</strong><span>Mall Vivo Los Trapenses</span></li>
+      <li><strong>MUT</strong><span>Mercado Urbano Tobalaba</span></li>
+      <li><strong>Espacio Urbano La Dehesa</strong><span>Espacio Urbano La Dehesa</span></li>
+      <li><strong>Pueblo del Inglés</strong><span>Pueblo del Inglés, local</span></li>
+    </ul>
+    <p class="muted">Direcciones y horarios de ejemplo.</p>
+  </dialog>
+
+  <dialog id="dlg-account" class="dialog">
+    <form method="dialog" class="dialog__close-wrap"><button class="dialog__close" aria-label="Cerrar">&times;</button></form>
+    <h2>Crear cuenta</h2>
+    <form id="form-account" class="stack">
+      <label for="acc-nombre">Nombre</label>
+      <input id="acc-nombre" type="text" required>
+      <label for="acc-email">Correo</label>
+      <input id="acc-email" type="email" required>
+      <label for="acc-pass">Contraseña</label>
+      <input id="acc-pass" type="password" minlength="6" required>
+      <button class="btn btn--primary" type="submit">Crear cuenta</button>
+      <p class="muted">Simulado: los datos se guardan solo en este navegador.</p>
+    </form>
+  </dialog>
+
+  <dialog id="dlg-list" class="dialog">
+    <form method="dialog" class="dialog__close-wrap"><button class="dialog__close" aria-label="Cerrar">&times;</button></form>
+    <h2 id="dlg-list-title">Lista</h2>
+    <ul class="item-list" id="dlg-list-items"></ul>
+    <p class="item-total" id="dlg-list-total"></p>
+    <p class="muted">Guardado en este navegador.</p>
+  </dialog>
+
+  <script src="js/productos.js"></script>
+  <script src="js/shared.js"></script>
+  <script>
+    (function () {
+      const V = window.Viale;
+      V.bindHeader();
+
+      const id = V.getParam('id');
+      const p = PRODUCTOS.find((x) => x.id === id);
+
+      if (!p) {
+        document.title = 'Producto no encontrado · Viale Joyas';
+        document.getElementById('no-encontrado').hidden = false;
+        return;
+      }
+
+      const cat = CATEGORIAS.find((c) => c.id === p.categoria);
+      document.title = p.nombre + ' · Viale Joyas';
+      document.getElementById('producto').hidden = false;
+
+      // Migas de pan y cabecera
+      document.getElementById('crumb-cat').textContent = cat.nombre;
+      document.getElementById('crumb-cat').href = 'catalogo.html?categoria=' + cat.id;
+      document.getElementById('crumb-nombre').textContent = p.nombre;
+      document.getElementById('p-img').textContent = ICONOS[p.categoria];
+      document.getElementById('p-tags').innerHTML = V.tagsHTML(p);
+      document.getElementById('p-nombre').textContent = p.nombre;
+      document.getElementById('p-material').textContent = p.material;
+      document.getElementById('p-precio').textContent = V.fmt(p.precio);
+      document.getElementById('p-desc').textContent = p.descripcion;
+
+      // Disponibilidad por tienda
+      const tbody = document.getElementById('stock-body');
+      let conStock = 0;
+      tbody.innerHTML = TIENDAS.map((t) => {
+        const n = p.stock[t.id] || 0;
+        if (n > 0) conStock++;
+        const e = V.estado(n);
+        return `<tr>
+          <td><strong>${t.nombre}</strong></td>
+          <td>${t.direccion}</td>
+          <td><span class="st ${e.cls}">${e.txt}</span></td>
+        </tr>`;
+      }).join('');
+      document.getElementById('stock-resumen').textContent =
+        conStock > 0
+          ? `Disponible en ${conStock} de ${TIENDAS.length} tiendas.`
+          : 'Por ahora no hay unidades en tienda. Consulta por otros productos similares.';
+
+      // Botones de compra y favorito
+      const btnAdd = document.getElementById('p-add');
+      const btnFav = document.getElementById('p-fav');
+      btnAdd.addEventListener('click', () => {
+        V.addToCart(p);
+        btnAdd.textContent = 'Agregado ✓';
+        setTimeout(() => { btnAdd.textContent = 'Agregar al carrito'; }, 1200);
+      });
+
+      function syncFav() {
+        btnFav.textContent = V.isWished(p.id) ? 'En tu lista de deseos' : 'Lista de deseos';
+      }
+      btnFav.addEventListener('click', () => { V.toggleWish(p); syncFav(); });
+      syncFav();
+
+      // Productos relacionados de la misma categoría
+      const rel = PRODUCTOS.filter((x) => x.categoria === p.categoria && x.id !== p.id).slice(0, 3);
+      const relBox = document.getElementById('relacionados');
+      if (rel.length === 0) {
+        document.querySelector('.related').hidden = true;
+      } else {
+        relBox.innerHTML = rel.map((x) => V.cardHTML(x)).join('');
+        V.bindCards(relBox);
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+/* Estilos para catálogo y ficha de producto */
+
+/* ----- Encabezado de página ----- */
+.page-head { padding: 2.5rem 0 1rem; }
+.page-head h1 { font-size: 2.4rem; margin: 0.3rem 0; }
+.breadcrumb { font-size: 0.85rem; color: var(--muted); margin: 1.5rem 0 0; }
+.breadcrumb a { text-decoration: none; }
+.breadcrumb a:hover { color: var(--gold); }
+
+/* ----- Chips de categoría ----- */
+.chips { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 1rem 0 1.5rem; }
+.chip {
+  padding: 0.4rem 0.9rem; border: 1px solid var(--gold-light);
+  border-radius: 999px; text-decoration: none; font-size: 0.9rem;
+  transition: background 0.2s;
+}
+.chip:hover { background: var(--cream); }
+.chip.is-active { background: var(--gold); color: var(--white); border-color: var(--gold); }
+
+/* ----- Barra de herramientas ----- */
+.toolbar {
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;
+}
+.toolbar select {
+  padding: 0.4rem 0.6rem; border: 1px solid var(--gold-light);
+  border-radius: 8px; font: inherit; background: var(--white);
+}
+
+/* ----- Tarjetas ----- */
+.card__link { text-decoration: none; color: inherit; display: block; }
+.card__link:hover h3 { color: var(--gold); }
+.card__tags { margin: 0.4rem 0 0; min-height: 1.4rem; }
+.tag {
+  display: inline-block; font-size: 0.7rem; text-transform: uppercase;
+  letter-spacing: 0.08em; background: var(--cream); color: var(--gold);
+  padding: 0.2rem 0.5rem; border-radius: 4px; margin: 0 0.3rem 0.3rem 0;
+}
+.empty { padding: 3rem 0; text-align: center; color: var(--muted); }
+
+/* ----- Ficha de producto ----- */
+.product {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 3rem;
+  padding: 2rem 0;
+}
+.product__img {
+  height: 420px; border-radius: var(--radius);
+  background: var(--cream); color: var(--gold); font-size: 7rem;
+  display: flex; align-items: center; justify-content: center;
+}
+.product h1 { font-size: 2.2rem; margin: 0.6rem 0 0.4rem; }
+.product__price { font-size: 1.5rem; margin: 0.8rem 0; }
+.product__buy { display: flex; gap: 0.6rem; margin: 1.5rem 0; flex-wrap: wrap; }
+.product__buy .btn { flex: 1; text-align: center; min-width: 160px; }
+.info-list { padding-left: 1.1rem; color: var(--muted); font-size: 0.9rem; }
+
+/* ----- Disponibilidad por tienda ----- */
+.stock-section { padding: 2rem 0; border-top: 1px solid var(--cream-dark); }
+.stock-section h2 { margin-bottom: 0.3rem; }
+.stock-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+.stock-table th, .stock-table td {
+  text-align: left; padding: 0.75rem 0.4rem;
+  border-bottom: 1px solid var(--cream-dark);
+}
+.stock-table th { font-size: 0.85rem; color: var(--muted); font-weight: normal; }
+.st {
+  display: inline-block; padding: 0.2rem 0.6rem;
+  border-radius: 999px; font-size: 0.8rem;
+}
+.st-ok { background: #e4efe6; color: #2f6a3d; }
+.st-ultimas { background: #f7ecd3; color: #8a5d10; }
+.st-agotado { background: #eeeeee; color: #777; }
+
+/* ----- Relacionados ----- */
+.related { padding: 2rem 0 4rem; border-top: 1px solid var(--cream-dark); }
+.related h2 { margin-bottom: 1.5rem; }
+
+/* ----- Responsive ----- */
+@media (max-width: 800px) {
+  .product { grid-template-columns: 1fr; gap: 1.5rem; }
+  .product__img { height: 280px; font-size: 5rem; }
+  .page-head h1 { font-size: 1.9rem; }
+}
