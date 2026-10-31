@@ -6,6 +6,7 @@
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
   const fmt = (n) => '$' + Number(n).toLocaleString('es-CL');
+  const heart = (on) => `<svg viewBox="0 0 24 24" width="20" height="20" fill="${on ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M12 20.5s-7.5-4.4-9.3-8.9C1.6 8.4 3.5 5 7 5c2.2 0 3.6 1.2 5 3 1.4-1.8 2.8-3 5-3 3.5 0 5.4 3.4 4.3 6.6-1.8 4.5-9.3 8.9-9.3 8.9z"/></svg>`;
 
   /* ---------- Almacenamiento ---------- */
   const store = {
@@ -45,7 +46,7 @@
       const exists = wishlist.some((w) => w.id === p.id);
       wishlist = exists ? wishlist.filter((w) => w.id !== p.id) : [...wishlist, p];
       store.set('wishlist', wishlist);
-      $('.btn-fav', card).textContent = exists ? 'Favorito' : 'En favoritos';
+      $('.btn-fav', card).innerHTML = heart(!exists);
       updateCounters();
     });
 
@@ -58,7 +59,7 @@
     });
 
     // Marcar el estado inicial del botón de favorito
-    if (wishlist.some((w) => w.id === p.id)) $('.btn-fav', card).textContent = 'En favoritos';
+    $('.btn-fav', card).innerHTML = heart(wishlist.some((w) => w.id === p.id));
   });
 
   /* ---------- Diálogos ---------- */
