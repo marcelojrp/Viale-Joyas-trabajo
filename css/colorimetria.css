@@ -1,0 +1,45 @@
+/* Estilos de la página de colorimetría */
+
+.color-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 3rem;
+  padding: 1rem 0 2rem; align-items: start;
+}
+
+.upload {
+  display: inline-block; cursor: pointer;
+  padding: 0.6rem 1.1rem; border-radius: 999px;
+  background: var(--gold); color: var(--white); font-size: 0.95rem;
+  transition: background 0.2s;
+}
+.upload:hover { background: #8f7143; }
+.upload input { display: none; }
+
+.canvas-wrap {
+  margin-top: 1.2rem; background: var(--cream);
+  border-radius: var(--radius); padding: 0.6rem;
+  display: flex; justify-content: center;
+}
+#lienzo {
+  max-width: 100%; height: auto; border-radius: 8px;
+  cursor: crosshair; display: block;
+}
+
+.result {
+  background: var(--white); border: 1px solid var(--cream-dark);
+  border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow);
+}
+.swatch {
+  width: 100%; height: 110px; border-radius: 8px;
+  border: 1px solid var(--cream-dark); margin-bottom: 1rem;
+  background: var(--cream);
+}
+.result h2 { font-size: 1.6rem; margin: 0 0 0.4rem; color: var(--gold); }
+.result p { margin: 0.4rem 0; }
+.warn {
+  font-size: 0.85rem; color: var(--muted); background: var(--cream);
+  padding: 0.7rem 0.9rem; border-radius: 8px; margin-top: 1rem;
+}
+
+@media (max-width: 800px) {
+  .color-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+}

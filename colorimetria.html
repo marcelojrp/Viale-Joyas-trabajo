@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Descubre tu color · Viale Joyas</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/catalogo.css">
+  <link rel="stylesheet" href="css/colorimetria.css">
+</head>
+<body>
+
+  <!-- ===== BARRA PRINCIPAL ===== -->
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <a href="index.html" class="brand" aria-label="Viale Joyas, inicio">
+        <img src="assets/logo.png" alt="Logo Viale Joyas">
+      </a>
+
+      <form class="search" id="form-search" role="search">
+        <label for="buscador" class="sr-only">Buscar</label>
+        <input id="buscador" type="search" placeholder="Buscar aros, collares, anillos...">
+        <button type="submit" aria-label="Buscar">Buscar</button>
+      </form>
+
+      <nav class="actions" aria-label="Acciones de cuenta">
+        <button class="action" id="btn-wishlist" type="button">
+          <span class="action__icon" aria-hidden="true">&#9825;</span>
+          <span class="action__label">Lista de deseos</span>
+          <span class="badge" id="wish-count">0</span>
+        </button>
+        <button class="action" id="btn-stores" type="button">
+          <span class="action__icon" aria-hidden="true">&#9906;</span>
+          <span class="action__label">Buscar tiendas</span>
+        </button>
+        <button class="action" id="btn-account" type="button">
+          <span class="action__icon" aria-hidden="true">&#9787;</span>
+          <span class="action__label">Crear cuenta</span>
+        </button>
+        <button class="action" id="btn-cart" type="button">
+          <span class="action__icon" aria-hidden="true">&#128717;</span>
+          <span class="action__label">Carrito</span>
+          <span class="badge" id="cart-count">0</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ===== BARRA SECUNDARIA ===== -->
+  <nav class="subbar" aria-label="Categorías">
+    <div class="container subbar__inner">
+      <a href="index.html#festividad" class="subbar__link subbar__link--festive">Festividad</a>
+      <a href="index.html#novedades" class="subbar__link">Novedades y destacados</a>
+      <a href="index.html#estilos" class="subbar__link">Estilos de joya</a>
+      <a href="colorimetria.html" class="subbar__link" aria-current="page">Colorimetría</a>
+      <a href="index.html#temporada" class="subbar__link">Temporada</a>
+      <a href="index.html#faq" class="subbar__link">Preguntas frecuentes</a>
+    </div>
+  </nav>
+
+  <main class="container">
+    <header class="page-head">
+      <p class="breadcrumb"><a href="index.html">Inicio</a> / <span>Descubre tu color</span></p>
+      <h1>Descubre tu color</h1>
+      <p class="muted">Sube una foto con buena luz natural y haz clic en una zona de piel sin sombras. Calculamos tu subtono y te mostramos las joyas que más te favorecen.</p>
+      <p class="muted">La foto se analiza en tu navegador. No se envía ni se guarda en ningún servidor.</p>
+    </header>
+
+    <section class="color-grid">
+      <div>
+        <label class="upload" for="foto">
+          <span>Elegir foto</span>
+          <input id="foto" type="file" accept="image/*">
+        </label>
+
+        <div class="canvas-wrap" id="canvas-wrap" hidden>
+          <canvas id="lienzo" aria-label="Foto para seleccionar una zona de piel"></canvas>
+        </div>
+        <p class="muted" id="instruccion" hidden>Haz clic sobre la piel (mejilla, frente o cuello).</p>
+        <button class="btn btn--ghost" id="reiniciar" type="button" hidden>Elegir otra foto</button>
+      </div>
+
+      <div class="result" id="resultado" hidden aria-live="polite">
+        <div class="swatch" id="swatch" aria-hidden="true"></div>
+        <h2 id="subtono-titulo"></h2>
+        <p id="subtono-desc"></p>
+        <p class="muted" id="profundidad"></p>
+        <p class="warn">Estimación orientativa. La luz, la cámara y el maquillaje alteran los colores. Si la foto tiene luz amarilla o sombras, el resultado puede variar.</p>
+      </div>
+    </section>
+
+    <section class="related" id="recomendadas" hidden>
+      <h2>Joyas recomendadas para ti</h2>
+      <div class="grid" id="grid-reco"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <img src="assets/logo.png" alt="Viale Joyas" class="footer__logo">
+      <p>Joyería de autor hecha a mano.</p>
+      <p class="muted">Proyecto académico con datos de ejemplo. No es el sitio oficial de la marca.</p>
+    </div>
+  </footer>
+
+  <!-- ===== DIÁLOGOS ===== -->
+  <dialog id="dlg-stores" class="dialog">
+    <form method="dialog" class="dialog__close-wrap"><button class="dialog__close" aria-label="Cerrar">&times;</button></form>
+    <h2>Nuestras tiendas</h2>
+    <ul class="store-list">
+      <li><strong>Vivo Los Trapenses</strong><span>Mall Vivo Los Trapenses</span></li>
+      <li><strong>MUT</strong><span>Mercado Urbano Tobalaba</span></li>
+      <li><strong>Espacio Urbano La Dehesa</strong><span>Espacio Urbano La Dehesa</span></li>
+      <li><strong>Pueblo del Inglés</strong><span>Pueblo del Inglés, local</span></li>
+    </ul>
+    <p class="muted">Direcciones y horarios de ejemplo.</p>
+  </dialog>
+
+  <dialog id="dlg-account" class="dialog">
+    <form method="dialog" class="dialog__close-wrap"><button class="dialog__close" aria-label="Cerrar">&times;</button></form>
+    <h2>Crear cuenta</h2>
+    <form id="form-account" class="stack">
+      <label for="acc-nombre">Nombre</label>
+      <input id="acc-nombre" type="text" required>
+      <label for="acc-email">Correo</label>
+      <input id="acc-email" type="email" required>
+      <label for="acc-pass">Contraseña</label>
+      <input id="acc-pass" type="password" minlength="6" required>
+      <button class="btn btn--primary" type="submit">Crear cuenta</button>
+      <p class="muted">Simulado: los datos se guardan solo en este navegador.</p>
+    </form>
+  </dialog>
+
+  <dialog id="dlg-list" class="dialog">
+    <form method="dialog" class="dialog__close-wrap"><button class="dialog__close" aria-label="Cerrar">&times;</button></form>
+    <h2 id="dlg-list-title">Lista</h2>
+    <ul class="item-list" id="dlg-list-items"></ul>
+    <p class="item-total" id="dlg-list-total"></p>
+    <p class="muted">Guardado en este navegador.</p>
+  </dialog>
+
+  <script src="js/productos.js"></script>
+  <script src="js/shared.js"></script>
+  <script src="js/colorimetria.js"></script>
+</body>
+</html>
