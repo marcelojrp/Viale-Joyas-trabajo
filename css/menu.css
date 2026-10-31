@@ -1,0 +1,77 @@
+/* Menú móvil: botón de tres rayas y panel desplegable */
+
+/* ----- Botón de tres rayas ----- */
+.menu-toggle {
+  display: none; flex-direction: column; justify-content: center; align-items: center;
+  gap: 5px; width: 44px; height: 44px; padding: 0; flex: 0 0 44px;
+  background: none; border: none; cursor: pointer;
+}
+.menu-toggle span {
+  display: block; width: 24px; height: 2px; border-radius: 2px;
+  background: var(--ink); transition: transform 0.25s, opacity 0.2s;
+}
+.menu-toggle.is-open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.menu-toggle.is-open span:nth-child(2) { opacity: 0; }
+.menu-toggle.is-open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ----- Panel desplegable ----- */
+.drawer {
+  position: fixed; inset: 0; z-index: 40;
+  background: var(--white); overflow-y: auto;
+  padding: 1rem 1.2rem 2rem;
+  transform: translateY(-100%); visibility: hidden;
+  transition: transform 0.3s ease, visibility 0.3s;
+}
+.drawer.is-open { transform: translateY(0); visibility: visible; }
+
+.drawer__head {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 1rem;
+}
+.drawer__logo { height: 48px; width: auto; }
+.drawer__close {
+  background: none; border: none; font-size: 2.2rem; line-height: 1;
+  cursor: pointer; color: var(--ink); padding: 0.2rem 0.5rem;
+}
+
+.drawer .search { display: flex; width: 100%; min-width: 0; margin-bottom: 1.2rem; }
+
+.drawer__links { display: flex; flex-direction: column; }
+.drawer__link {
+  padding: 0.9rem 0.2rem; border-bottom: 1px solid var(--cream-dark);
+  text-decoration: none; font-size: 1.05rem;
+}
+.drawer__link:hover { color: var(--gold); }
+
+.drawer__actions {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-top: 1.4rem;
+}
+.drawer__actions button {
+  padding: 0.8rem 0.5rem; border: 1px solid var(--gold-light);
+  background: var(--cream); color: var(--ink); border-radius: 10px;
+  font: inherit; font-size: 0.9rem; cursor: pointer;
+}
+.drawer__actions button:hover { background: var(--cream-dark); }
+
+.drawer__ig {
+  display: block; margin-top: 1.4rem; text-align: center;
+  color: var(--gold); text-decoration: none; font-size: 0.95rem;
+}
+
+/* ----- Escritorio: sin menú móvil ----- */
+@media (min-width: 801px) {
+  .menu-toggle, .drawer { display: none; }
+}
+
+/* ----- Celular: barra compacta ----- */
+@media (max-width: 800px) {
+  .topbar__inner { flex-wrap: nowrap; justify-content: space-between; gap: 0.4rem; padding: 0.4rem 0; }
+  .brand img { height: 44px; }
+  .menu-toggle { display: flex; }
+  .topbar .search { display: none; }
+  .subbar { display: none; }
+  #btn-stores, #btn-account { display: none; }
+  .action__label { display: none; }
+  .actions { gap: 0.1rem; }
+  .action { padding: 0.3rem 0.4rem; }
+}
