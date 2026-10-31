@@ -6,6 +6,7 @@
   <title>Viale Joyas · Joyería de autor</title>
   <meta name="description" content="Joyería de autor hecha a mano. Aros, collares, anillos, pulseras y esclavas en enchape de oro 18k y plata 925.">
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/slider.css">
 </head>
 <body>
 
@@ -58,14 +59,56 @@
   </nav>
 
   <main>
-    <!-- ===== FESTIVIDAD ===== -->
-    <section class="hero" id="festividad">
-      <div class="container hero__inner">
-        <p class="eyebrow">Festividad más cercana</p>
-        <h1 id="festividad-nombre">Navidad</h1>
-        <p class="hero__text" id="festividad-texto">Piezas pensadas para regalar y brillar en la temporada.</p>
-        <p class="countdown" id="festividad-countdown"></p>
-        <a href="#novedades" class="btn btn--primary">Ver regalos</a>
+    <!-- ===== CARRUSEL PRINCIPAL ===== -->
+    <section class="hero-slider" id="festividad" aria-roledescription="carrusel" aria-label="Destacados" tabindex="0">
+      <div class="slides">
+
+        <!-- Diapositiva 1: logo -->
+        <div class="slide is-active" aria-hidden="false">
+          <img class="slide__bg" src="assets/principal.jpg" alt=""
+               onerror="this.onerror=null;this.src='assets/tienda.png';">
+          <div class="slide__content">
+            <div class="slide__logo">
+              <img src="assets/logo.png" alt="Viale Joyas">
+            </div>
+            <p>Joyería de autor hecha a mano</p>
+            <a href="catalogo.html" class="btn btn--primary">Ver catálogo</a>
+          </div>
+        </div>
+
+        <!-- Diapositiva 2: festividad más cercana -->
+        <div class="slide" aria-hidden="true">
+          <img class="slide__bg" src="assets/festividad.jpg" alt=""
+               onerror="this.onerror=null;this.src='assets/tienda.png';">
+          <div class="slide__content">
+            <p class="eyebrow">Festividad más cercana</p>
+            <h1 id="festividad-nombre">Navidad</h1>
+            <p id="festividad-texto">Piezas pensadas para regalar y brillar en la temporada navideña.</p>
+            <p class="countdown" id="festividad-countdown"></p>
+            <a href="#novedades" class="btn btn--primary">Ver regalos</a>
+          </div>
+        </div>
+
+        <!-- Diapositiva 3: colorimetría -->
+        <div class="slide" aria-hidden="true">
+          <img class="slide__bg" src="assets/colorimetria.jpg" alt=""
+               onerror="this.onerror=null;this.src='assets/tienda.png';">
+          <div class="slide__content">
+            <p class="eyebrow">Nuevo</p>
+            <h1>Descubre tu color</h1>
+            <p>Sube una foto y te mostramos las joyas que mejor combinan con tu piel.</p>
+            <a href="colorimetria.html" class="btn btn--primary">Probar con mi foto</a>
+          </div>
+        </div>
+      </div>
+
+      <button class="slider__btn slider__prev" type="button" aria-label="Diapositiva anterior">&#8249;</button>
+      <button class="slider__btn slider__next" type="button" aria-label="Diapositiva siguiente">&#8250;</button>
+
+      <div class="dots" role="group" aria-label="Elegir diapositiva">
+        <button class="dot is-active" type="button" aria-label="Diapositiva 1" aria-current="true"></button>
+        <button class="dot" type="button" aria-label="Diapositiva 2"></button>
+        <button class="dot" type="button" aria-label="Diapositiva 3"></button>
       </div>
     </section>
 
@@ -277,5 +320,6 @@
   </dialog>
 
   <script src="js/main.js"></script>
+  <script src="js/slider.js"></script>
 </body>
 </html>
