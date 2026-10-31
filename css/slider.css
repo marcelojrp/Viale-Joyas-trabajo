@@ -1,0 +1,77 @@
+/* Carrusel principal (hero) */
+
+.hero-slider {
+  position: relative; height: 520px; overflow: hidden;
+  background: #2a2620; color: var(--white);
+  outline: none;
+}
+.hero-slider:focus-visible { box-shadow: inset 0 0 0 3px var(--gold-light); }
+
+.slides { position: absolute; inset: 0; }
+
+.slide {
+  position: absolute; inset: 0; opacity: 0; visibility: hidden;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #8f7143 0%, #1a1a1a 100%);
+  transition: opacity 0.8s ease, visibility 0.8s;
+}
+.slide.is-active { opacity: 1; visibility: visible; }
+
+.slide__bg {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; z-index: 0;
+}
+.slide__bg { filter: brightness(0.7); }
+.slide::before {
+  content: ""; position: absolute; inset: 0; z-index: 1;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.8) 100%);
+}
+
+.slide__content {
+  position: relative; z-index: 2; text-align: center;
+  max-width: 680px; padding: 2rem;
+}
+.slide h1 { font-size: 3rem; margin: 0.2rem 0 0.8rem; color: var(--white); text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6); }
+.slide p { color: #ffffff; margin: 0.4rem 0; font-size: 1.1rem; text-shadow: 0 1px 8px rgba(0, 0, 0, 0.7); }
+.slide .eyebrow { color: var(--gold-light); }
+.slide .countdown { color: var(--gold-light); }
+
+.slide__logo {
+  display: inline-block; background: var(--white);
+  padding: 1.2rem 2rem; border-radius: 12px; margin-bottom: 1rem;
+}
+.slide__logo img { height: 110px; width: auto; margin: 0 auto; }
+
+.slide .btn { margin-top: 0.8rem; }
+.slide .btn--primary { background: var(--gold); border-color: var(--gold-light); }
+
+/* Flechas */
+.slider__btn {
+  position: absolute; top: 50%; transform: translateY(-50%); z-index: 3;
+  width: 44px; height: 44px; border-radius: 50%; border: none;
+  background: rgba(255, 255, 255, 0.2); color: var(--white);
+  font-size: 1.8rem; line-height: 1; cursor: pointer;
+  transition: background 0.2s;
+}
+.slider__btn:hover { background: rgba(255, 255, 255, 0.4); }
+.slider__btn:focus-visible { outline: 2px solid var(--gold-light); outline-offset: 2px; }
+.slider__prev { left: 1rem; }
+.slider__next { right: 1rem; }
+
+/* Puntos */
+.dots {
+  position: absolute; bottom: 1rem; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 0.5rem; z-index: 3;
+}
+.dot {
+  width: 10px; height: 10px; border-radius: 50%; padding: 0;
+  border: none; background: rgba(255, 255, 255, 0.5); cursor: pointer;
+}
+.dot.is-active { background: var(--white); }
+
+@media (max-width: 800px) {
+  .hero-slider { height: 580px; }
+  .slide h1 { font-size: 2.2rem; }
+  .slide__logo img { height: 80px; }
+  .slider__btn { width: 36px; height: 36px; font-size: 1.4rem; }
+}
