@@ -1,7 +1,8 @@
 /**
  * Flappy DeGregoriano
  * Canvas 640x360. Tres vidas, 5 puntos por pareja de tuberías,
- * objetivo 100 puntos. Sin dependencias externas.
+ * objetivo 200 puntos, con 10 niveles de dificultad creciente.
+ * Sin dependencias externas.
  */
 (() => {
   'use strict';
@@ -15,24 +16,31 @@
   const PIPE_W = 62;
   const GRAVITY = 0.22;
   const FLAP = -4.65;
-  const TARGET = 100;
+  const TARGET = 200;
   const LIVES_MAX = 3;
   const RECORD_KEY = 'viale_flappy_de_gregoris_record';
   const PIPE_CAP = 0.3;  // fracción superior de tuberia.png que corresponde a la tapa
   const FONT = '"Press Start 2P", monospace';
 
-  // Dificultad por nivel (cada 20 puntos sube un nivel, máximo nivel 5).
+  // Dificultad: cada 20 puntos sube un nivel (máximo nivel 10).
   const LEVELS = [
     { speed: 2.25, gap: 170, spacing: 105 },
-    { speed: 2.5,  gap: 158, spacing: 96 },
-    { speed: 2.75, gap: 146, spacing: 88 },
-    { speed: 3.0,  gap: 136, spacing: 82 },
-    { speed: 3.25, gap: 128, spacing: 78 }
+    { speed: 2.40, gap: 164, spacing: 100 },
+    { speed: 2.55, gap: 158, spacing: 96 },
+    { speed: 2.70, gap: 152, spacing: 92 },
+    { speed: 2.85, gap: 146, spacing: 88 },
+    { speed: 3.00, gap: 140, spacing: 84 },
+    { speed: 3.10, gap: 134, spacing: 80 },
+    { speed: 3.20, gap: 128, spacing: 78 },
+    { speed: 3.30, gap: 122, spacing: 76 },
+    { speed: 3.40, gap: 118, spacing: 74 }
   ];
 
-  // Capas de fondo.
-  const CITY_W = 1280, CITY_H = 170;  // skyline, se repite cada 1280 px
-  const NEAR_W = 640, NEAR_H = 70;    // árboles en primer plano, se repite cada 640 px
+  // Capas de fondo (todas se repiten en horizontal).
+  const MTN_W = 1920, MTN_H = 150;      // cordillera
+  const HILLS_W = 1920, HILLS_H = 110;  // cerros, con San Cristóbal
+  const CITY_W = 1920, CITY_H = 170;    // ciudad
+  const NEAR_W = 640, NEAR_H = 70;      // árboles del primer plano
 
   const canvas = document.getElementById('juego-canvas');
   const dialog = document.getElementById('dlg-juego');
@@ -139,7 +147,7 @@
     ctx.fillText(str, x, y);
   }
 
-  // ---------- Paleta del escenario ----------
+  // ---------- Paleta ----------
   const C = {
     stone: '#eadfc8', stoneSh: '#c9b99a', stoneDk: '#8f8168',
     glass: '#5d8fbd', glassHi: '#a9d4f2', glassDk: '#2d4a66',
@@ -147,11 +155,12 @@
   };
   const PAL_NEAR = { trunk: '#6b4a2f', dark: '#1d6236', mid: '#2f8f4a', light: '#56b866' };
 
-  // ---------- Elementos del escenario (en capas) ----------
+  // ---------- Pixel art: letras y primitivas ----------
   const LETTERS = {
     F: ['11111', '10000', '11110', '10000', '10000'],
     E: ['11111', '10000', '11110', '10000', '11111'],
-    N: ['10001', '11001', '10101', '10011', '10001']
+    N: ['10001', '11001', '10101', '10011', '10001'],
+    M: ['10001', '11011', '10101', '10001', '10001']
   };
   function paintWordG(g, word, x, y, s, c) {
     g.fillStyle = c;
@@ -165,15 +174,30 @@
       cx += 6 * s;
     }
   }
-
   // Ventana con marco y brillo.
   function winG(g, x, y, w, h) {
     rectG(g, x, y, w, h, C.frame);
     rectG(g, x + 1, y + 1, w - 2, h - 2, C.glass);
     rectG(g, x + 1, y + 1, 2, h - 2, C.glassHi);
   }
+  // Palmera de pixel art sobre la base b.
+  function palmG(g, x, b, s) {
+    rectG(g, x - 2 * s, b - 44 * s, 4 * s, 44 * s, PAL_NEAR.trunk);
+    blobG(g, x - 9 * s, b - 46 * s, 8 * s, PAL_NEAR.mid);
+    blobG(g, x + 9 * s, b - 46 * s, 8 * s, PAL_NEAR.mid);
+    blobG(g, x, b - 52 * s, 9 * s, PAL_NEAR.dark);
+    blobG(g, x - 3 * s, b - 50 * s, 5 * s, PAL_NEAR.light);
+  }
+  function treeG(g, x, base, s, p) {
+    rectG(g, x - 3 * s, base - 24 * s, 6 * s, 24 * s, p.trunk);
+    blobG(g, x, base - 34 * s, 16 * s, p.dark);
+    blobG(g, x - 8 * s, base - 27 * s, 11 * s, p.mid);
+    blobG(g, x + 9 * s, base - 26 * s, 11 * s, p.mid);
+    blobG(g, x - 4 * s, base - 39 * s, 6 * s, p.light);
+  }
 
-  // Edificio tipo Z: bloque largo con franja de vidrio y letrero FEN.
+  // ---------- Edificios y elementos de Santiago ----------
+  // Edificio tipo Z (FEN): bloque largo con franja de vidrio y letrero.
   function laFEN(g, x, b) {
     const w = 230, h = 78, y = b - h;
     rectG(g, x, y, w, h, C.stone);
@@ -190,25 +214,20 @@
     const w = 200;
     rectG(g, x, b - 62, w, 62, C.stone);
     rectG(g, x - 2, b - 64, w + 4, 4, C.stoneSh);
-    // Pabellones de las esquinas.
     rectG(g, x, b - 80, 36, 80, C.stone);
     rectG(g, x + w - 36, b - 80, 36, 80, C.stone);
     rectG(g, x - 2, b - 82, 40, 3, C.stoneSh);
     rectG(g, x + w - 38, b - 82, 40, 3, C.stoneSh);
     winG(g, x + 8, b - 70, 20, 28);
     winG(g, x + w - 28, b - 70, 20, 28);
-    // Pórtico central.
     rectG(g, x + 58, b - 96, 84, 96, C.stone);
     rectG(g, x + 56, b - 98, 88, 4, C.stoneSh);
-    // Frontón triangular.
     for (let r = 0; r < 14; r++) {
       const wd = 6 + r * 6;
       rectG(g, x + 100 - wd / 2, b - 110 + r, wd, 1, C.stone);
     }
-    // Columnas.
     for (let i = 0; i < 6; i++) rectG(g, x + 64 + i * 13, b - 92, 5, 88, C.stoneSh);
     rectG(g, x + 92, b - 22, 16, 22, C.frame);
-    // Asta con bandera.
     rectG(g, x + 99, b - 134, 2, 24, '#9aa6b2');
     rectG(g, x + 101, b - 134, 14, 6, C.red);
     rectG(g, x + 101, b - 128, 14, 4, C.white);
@@ -223,6 +242,59 @@
     rectG(g, x + 54, b - 66, 58, 4, C.stoneSh);
     for (const cx of [58, 68, 92, 102]) rectG(g, x + cx, b - 60, 5, 60, C.stoneSh);
     rectG(g, x + 76, b - 40, 12, 40, C.glassDk);
+  }
+
+  // Torre Entel, estilizada: fuste delgado, anillo y antena.
+  function laEntel(g, x, b) {
+    rectG(g, x + 14, b - 140, 8, 140, '#cfd8e0');
+    rectG(g, x + 4, b - 104, 28, 8, '#9aa6b2');
+    rectG(g, x + 10, b - 148, 16, 8, '#dfe6ec');
+    rectG(g, x + 17, b - 162, 2, 14, '#444f5a');
+  }
+
+  // Gran Torre Santiago, estilizada: torre de vidrio con remate escalonado.
+  function laGranTorre(g, x, b, w, h, c) {
+    torreVidrio(g, x, b, w, h - 30, c);
+    for (let r = 0; r < 30; r++) {
+      const inset = Math.round((r / 30) * (w * 0.3));
+      rectG(g, x + inset, b - h + r, w - 2 * inset, 1, c);
+    }
+    rectG(g, x + w / 2 - 1, b - h - 4, 2, 4, C.red);
+  }
+
+  // Acceso del metro: kiosco con el letrero rojo de la M.
+  function laMetro(g, x, b) {
+    rectG(g, x, b - 30, 44, 30, C.stone);
+    rectG(g, x - 3, b - 34, 50, 5, C.frame);
+    rectG(g, x + 12, b - 18, 20, 18, C.glassDk);
+    rectG(g, x + 21, b - 80, 2, 46, '#9aa6b2');
+    rectG(g, x + 10, b - 100, 22, 22, C.red);
+    paintWordG(g, 'M', x + 13, b - 96, 3, '#ffffff');
+  }
+
+  // Viaducto del metro con tren de tres vagones.
+  function laViaducto(g, x, b, w) {
+    for (let px = x; px <= x + w - 6; px += 40) rectG(g, px, b - 36, 6, 36, '#b8b2a6');
+    rectG(g, x, b - 42, w, 6, '#8f8a80');
+    for (let i = 0; i < 3; i++) {
+      const cx = x + 20 + i * 52;
+      rectG(g, cx, b - 64, 46, 22, '#e8eef2');
+      rectG(g, cx, b - 52, 46, 3, '#d8432f');
+      for (let wx = cx + 4; wx < cx + 42; wx += 10) rectG(g, wx, b - 60, 7, 6, C.frame);
+    }
+  }
+
+  // Plaza: fuente, palmeras y bancas.
+  function laPlaza(g, x, b, w) {
+    rectG(g, x, b - 6, w, 6, '#d8c9a8');
+    rectG(g, x + w / 2 - 26, b - 18, 52, 12, C.stoneSh);
+    rectG(g, x + w / 2 - 22, b - 16, 44, 8, '#7fbfe6');
+    rectG(g, x + w / 2 - 1, b - 34, 2, 16, '#cfeaf9');
+    rectG(g, x + w / 2 - 4, b - 36, 8, 2, '#cfeaf9');
+    rectG(g, x + 60, b - 10, 16, 4, '#8b5e3c');
+    rectG(g, x + w - 76, b - 10, 16, 4, '#8b5e3c');
+    palmG(g, x + 14, b - 6, 0.9);
+    palmG(g, x + w - 26, b - 6, 0.9);
   }
 
   // Edificio de departamentos o administrativo.
@@ -245,29 +317,60 @@
     }
   }
 
-  function treeG(g, x, base, s, p) {
-    rectG(g, x - 3 * s, base - 24 * s, 6 * s, 24 * s, p.trunk);
-    blobG(g, x, base - 34 * s, 16 * s, p.dark);
-    blobG(g, x - 8 * s, base - 27 * s, 11 * s, p.mid);
-    blobG(g, x + 9 * s, base - 26 * s, 11 * s, p.mid);
-    blobG(g, x - 4 * s, base - 39 * s, 6 * s, p.light);
-  }
-
-  // Capa lejana: campus y edificios reconocibles, en una franja de 1280 px.
+  // Ciudad: capa lejana con los edificios reconocibles.
   const cityFar = makeLayer(CITY_W, CITY_H, g => {
-    laMoneda(g, 20, CITY_H);
-    edificioBloque(g, 240, CITY_H, 70, 46);
-    laFEN(g, 330, CITY_H);
-    torreVidrio(g, 580, CITY_H, 58, 110, '#5f93c0');
-    laBCCh(g, 660, CITY_H);
-    edificioBloque(g, 850, CITY_H, 84, 56);
-    torreVidrio(g, 950, CITY_H, 48, 128, '#4f7fae');
-    edificioBloque(g, 1010, CITY_H, 130, 60);
-    torreVidrio(g, 1150, CITY_H, 50, 118, '#6fa3cf');
-    edificioBloque(g, 1210, CITY_H, 70, 40);
+    laPlaza(g, 0, CITY_H, 200);
+    laMoneda(g, 220, CITY_H);
+    edificioBloque(g, 440, CITY_H, 70, 46);
+    laFEN(g, 530, CITY_H);
+    laMetro(g, 780, CITY_H);
+    torreVidrio(g, 860, CITY_H, 58, 110, '#5f93c0');
+    laBCCh(g, 940, CITY_H);
+    laEntel(g, 1130, CITY_H);
+    edificioBloque(g, 1190, CITY_H, 90, 54);
+    laGranTorre(g, 1300, CITY_H, 70, 160, '#4f86b8');
+    laViaducto(g, 1390, CITY_H, 200);
+    torreVidrio(g, 1610, CITY_H, 56, 100, '#6fa3cf');
+    laPlaza(g, 1690, CITY_H, 200);
+    edificioBloque(g, 1900, CITY_H, 20, 40);
   });
 
-  // Capa cercana: árboles, en una franja de 640 px.
+  // Cordillera de los Andes: cumbres con nieve, periódica en MTN_W.
+  const mtnRidge = (x) => {
+    const t = 2 * Math.PI * x / MTN_W;
+    return 62 + 22 * Math.sin(3 * t + 0.4) + 14 * Math.sin(7 * t + 1.3) +
+      8 * Math.sin(15 * t + 2.1) + 6 * Math.sin(29 * t);
+  };
+  const cordillera = makeLayer(MTN_W, MTN_H, g => {
+    for (let x = 0; x < MTN_W; x++) {
+      const h = Math.max(20, Math.round(mtnRidge(x)));
+      rectG(g, x, MTN_H - h, 1, h, '#7383ad');
+      const snow = h - 84;
+      if (snow > 0) rectG(g, x, MTN_H - h, 1, Math.min(h, snow + 4), '#f2f6fb');
+    }
+  });
+
+  // Cerros: San Cristóbal con la estatua de la Virgen y un cerro menor.
+  const hillTop = (x, cx, rw, hh) => {
+    const d = (x - cx) / rw;
+    return d * d < 1 ? hh * Math.sqrt(1 - d * d) : 0;
+  };
+  const hills = makeLayer(HILLS_W, HILLS_H, g => {
+    for (let x = 0; x < HILLS_W; x++) {
+      const h = Math.round(Math.max(hillTop(x, 520, 190, 72), hillTop(x, 1500, 150, 52)));
+      if (h <= 0) continue;
+      rectG(g, x, HILLS_H - h, 1, h, '#7a8f55');
+      const dark = Math.round(h * 0.45);
+      rectG(g, x, HILLS_H - dark, 1, dark, '#5c7448');
+    }
+    // Estatua de la Virgen sobre el cerro San Cristóbal.
+    const top = HILLS_H - 72;
+    rectG(g, 517, top - 14, 6, 3, C.white);
+    rectG(g, 518, top - 11, 4, 11, C.white);
+    rectG(g, 515, top - 9, 10, 2, C.white);
+  });
+
+  // Árboles del primer plano, en franja de NEAR_W px.
   const nearTrees = [[30, 0.8], [110, 0.7], [200, 0.9], [290, 0.75], [380, 0.85], [470, 0.7], [560, 0.9]];
   const nearLayer = makeLayer(NEAR_W, NEAR_H, g => {
     for (const [x, s] of nearTrees) {
@@ -299,12 +402,24 @@
       }
     }
 
-    // Skyline lejano: se desplaza a velocidad lenta.
+    // Cordillera: la más lejana, se mueve despacio.
+    const mtnOff = -wrap(worldOffset * 0.1, MTN_W);
+    const mtnY = GROUND_Y - 60 - MTN_H;
+    ctx.drawImage(cordillera, Math.round(mtnOff), mtnY);
+    ctx.drawImage(cordillera, Math.round(mtnOff + MTN_W), mtnY);
+
+    // Cerros con San Cristóbal.
+    const hillOff = -wrap(worldOffset * 0.25, HILLS_W);
+    const hillY = GROUND_Y - 40 - HILLS_H;
+    ctx.drawImage(hills, Math.round(hillOff), hillY);
+    ctx.drawImage(hills, Math.round(hillOff + HILLS_W), hillY);
+
+    // Ciudad.
     const farOff = -wrap(worldOffset * 0.4, CITY_W);
     ctx.drawImage(cityFar, Math.round(farOff), GROUND_Y - CITY_H);
     ctx.drawImage(cityFar, Math.round(farOff + CITY_W), GROUND_Y - CITY_H);
 
-    // Árboles cercanos: se desplazan más rápido.
+    // Árboles cercanos.
     const nearOff = -wrap(worldOffset * 0.75, NEAR_W);
     ctx.drawImage(nearLayer, Math.round(nearOff), GROUND_Y - NEAR_H);
     ctx.drawImage(nearLayer, Math.round(nearOff + NEAR_W), GROUND_Y - NEAR_H);
@@ -655,7 +770,7 @@
     drawHud();
     if (state === 'idle') {
       overlay(['FLAPPY DE GREGORIS'],
-        'Cruza los obstáculos y consigue 100 puntos.',
+        'Cruza los obstáculos y consigue 200 puntos.',
         'Pulsa espacio, flecha arriba o toca para comenzar');
     } else if (state === 'gameover') {
       overlay(['¡GAME OVER!'],
