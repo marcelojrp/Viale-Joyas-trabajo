@@ -4,7 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Catálogo · Viale Joyas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/menu.css">
   <link rel="stylesheet" href="css/catalogo.css">
 </head>
 <body>
@@ -24,20 +28,20 @@
 
       <nav class="actions" aria-label="Acciones de cuenta">
         <button class="action" id="btn-wishlist" type="button">
-          <span class="action__icon" aria-hidden="true">&#9825;</span>
+          <span class="action__icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M12 20.5s-7.5-4.4-9.3-8.9C1.6 8.4 3.5 5 7 5c2.2 0 3.6 1.2 5 3 1.4-1.8 2.8-3 5-3 3.5 0 5.4 3.4 4.3 6.6-1.8 4.5-9.3 8.9-9.3 8.9z"/></svg></span>
           <span class="action__label">Lista de deseos</span>
           <span class="badge" id="wish-count">0</span>
         </button>
         <button class="action" id="btn-stores" type="button">
-          <span class="action__icon" aria-hidden="true">&#9906;</span>
+          <span class="action__icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M12 21.5s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10.5" r="2.3"/></svg></span>
           <span class="action__label">Buscar tiendas</span>
         </button>
         <button class="action" id="btn-account" type="button">
-          <span class="action__icon" aria-hidden="true">&#9787;</span>
+          <span class="action__icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><circle cx="12" cy="9.5" r="3.2"/><path d="M6.2 18.4c1.2-2.4 3.3-3.6 5.8-3.6s4.6 1.2 5.8 3.6"/></svg></span>
           <span class="action__label">Crear cuenta</span>
         </button>
         <button class="action" id="btn-cart" type="button">
-          <span class="action__icon" aria-hidden="true">&#128717;</span>
+          <span class="action__icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h2.2l2.3 11h10.6l2.1-7.5H6.4"/><circle cx="9.5" cy="19.5" r="1.4"/><circle cx="17" cy="19.5" r="1.4"/></svg></span>
           <span class="action__label">Carrito</span>
           <span class="badge" id="cart-count">0</span>
         </button>
@@ -87,7 +91,8 @@
     <div class="container footer__inner">
       <img src="assets/logo.png" alt="Viale Joyas" class="footer__logo">
       <p>Joyería de autor hecha a mano.</p>
-      <p class="muted">Proyecto académico con datos de ejemplo. No es el sitio oficial de la marca.</p>
+      <p class="muted">No es el sitio oficial de la marca. Es parte de un trabajo de Marketing Digital.</p>
+      <a class="ig-link" href="https://www.instagram.com/vialejoyas/?hl=es" target="_blank" rel="noopener">Síguenos en Instagram @vialejoyas</a>
     </div>
   </footer>
 
@@ -132,36 +137,62 @@
   <script>
     (function () {
       const V = window.Viale;
-      const categoria = V.getParam('categoria') || 'todas';
-      const q = (V.getParam('q') || '').toLowerCase().trim();
+      const q0 = V.getParam('q') || '';
+      const q = q0.toLowerCase().trim();
       const grid = document.getElementById('grid');
-
-      // Título y migas de pan
-      const cat = CATEGORIAS.find((c) => c.id === categoria);
-      const titulo = cat ? cat.nombre : (q ? `Resultados para "${V.getParam('q')}"` : 'Todas las joyas');
-      document.getElementById('titulo').textContent = titulo;
-      document.title = titulo + ' · Viale Joyas';
-      document.getElementById('crumb').textContent = cat ? cat.nombre : 'Catálogo';
-
-      // Chips de categorías
       const chips = document.getElementById('chips');
-      const todos = [{ id: 'todas', nombre: 'Todas' }, ...CATEGORIAS];
-      chips.innerHTML = todos.map((c) => {
-        const href = c.id === 'todas' ? 'catalogo.html' : `catalogo.html?categoria=${c.id}`;
-        const active = c.id === categoria ? ' is-active' : '';
-        return `<a class="chip${active}" href="${href}">${c.nombre}</a>`;
-      }).join('');
+      const orden = document.getElementById('orden');
 
-      // Filtrado base
-      let base = PRODUCTOS.filter((p) => {
-        const okCat = categoria === 'todas' || p.categoria === categoria;
-        const okQ = !q || p.nombre.toLowerCase().includes(q)
-          || p.material.toLowerCase().includes(q)
-          || p.categoria.includes(q);
-        return okCat && okQ;
+      // Varias categorías en la URL: ?categoria=aros,collares
+      const iniciales = (V.getParam('categoria') || '').split(',')
+        .filter((c) => CATEGORIAS.some((x) => x.id === c));
+      const seleccion = new Set(iniciales);
+
+      function titulo() {
+        if (seleccion.size === 0) return q0 ? `Resultados para "${q0}"` : 'Todas las joyas';
+        const nombres = CATEGORIAS.filter((c) => seleccion.has(c.id)).map((c) => c.nombre);
+        if (nombres.length === 1) return nombres[0];
+        return nombres.slice(0, -1).join(', ') + ' y ' + nombres[nombres.length - 1];
+      }
+
+      // Refleja la selección en la dirección, sin recargar la página
+      function actualizarURL() {
+        const params = new URLSearchParams();
+        if (seleccion.size) params.set('categoria', [...seleccion].join(','));
+        if (q0) params.set('q', q0);
+        const s = params.toString();
+        history.replaceState(null, '', 'catalogo.html' + (s ? '?' + s : ''));
+      }
+
+      function renderChips() {
+        chips.innerHTML = [{ id: 'todas', nombre: 'Todas' }, ...CATEGORIAS].map((c) => {
+          const on = c.id === 'todas' ? seleccion.size === 0 : seleccion.has(c.id);
+          return `<button type="button" class="chip${on ? ' is-active' : ''}" data-cat="${c.id}" aria-pressed="${on}">${c.nombre}</button>`;
+        }).join('');
+      }
+
+      chips.addEventListener('click', (e) => {
+        const b = e.target.closest('.chip');
+        if (!b) return;
+        const id = b.dataset.cat;
+        if (id === 'todas') seleccion.clear();
+        else if (seleccion.has(id)) seleccion.delete(id);
+        else seleccion.add(id);
+        actualizarURL();
+        renderChips();
+        render();
       });
 
-      const orden = document.getElementById('orden');
+      function filtrar() {
+        return PRODUCTOS.filter((p) => {
+          const okCat = seleccion.size === 0 || seleccion.has(p.categoria);
+          const okQ = !q || p.nombre.toLowerCase().includes(q)
+            || p.material.toLowerCase().includes(q)
+            || p.categoria.includes(q);
+          return okCat && okQ;
+        });
+      }
+
       function ordenar(lista) {
         const copia = [...lista];
         switch (orden.value) {
@@ -173,10 +204,15 @@
       }
 
       function render() {
-        const lista = ordenar(base);
+        const t = titulo();
+        document.getElementById('titulo').textContent = t;
+        document.title = t + ' · Viale Joyas';
+        document.getElementById('crumb').textContent = seleccion.size ? t : 'Catálogo';
+
+        const lista = ordenar(filtrar());
         document.getElementById('conteo').textContent =
           `${lista.length} ${lista.length === 1 ? 'producto' : 'productos'}`;
-        document.getElementById('resumen').textContent = q ? `Búsqueda: "${V.getParam('q')}"` : '';
+        document.getElementById('resumen').textContent = q0 ? `Búsqueda: "${q0}"` : '';
         grid.innerHTML = lista.map((p) => V.cardHTML(p)).join('');
         document.getElementById('vacio').hidden = lista.length > 0;
       }
@@ -184,6 +220,7 @@
       orden.addEventListener('change', render);
       V.bindCards(grid);
       V.bindHeader();
+      renderChips();
       render();
     })();
   </script>
