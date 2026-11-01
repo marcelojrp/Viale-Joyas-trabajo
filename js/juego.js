@@ -12,17 +12,27 @@
   const PLAYER_X = 142;
   const PLAYER_W = 48, PLAYER_H = 62;
   const HITBOX = { x: 9, y: 8, w: 30, h: 44 };
-  const GAP = 170;
   const PIPE_W = 62;
-  const PIPE_SPEED = 2.25;
   const GRAVITY = 0.22;
   const FLAP = -4.65;
   const TARGET = 100;
   const LIVES_MAX = 3;
   const RECORD_KEY = 'viale_flappy_de_gregoris_record';
-  const BG_H = 170;      // alto con el que se dibuja fondocontinuo.png
   const PIPE_CAP = 0.3;  // fracción superior de tuberia.png que corresponde a la tapa
   const FONT = '"Press Start 2P", monospace';
+
+  // Dificultad por nivel (cada 20 puntos sube un nivel, máximo nivel 5).
+  const LEVELS = [
+    { speed: 2.25, gap: 170, spacing: 105 },
+    { speed: 2.5,  gap: 158, spacing: 96 },
+    { speed: 2.75, gap: 146, spacing: 88 },
+    { speed: 3.0,  gap: 136, spacing: 82 },
+    { speed: 3.25, gap: 128, spacing: 78 }
+  ];
+
+  // Capas de fondo.
+  const CITY_W = 1280, CITY_H = 170;  // skyline, se repite cada 1280 px
+  const NEAR_W = 640, NEAR_H = 70;    // árboles en primer plano, se repite cada 640 px
 
   const canvas = document.getElementById('juego-canvas');
   const dialog = document.getElementById('dlg-juego');
@@ -43,6 +53,30 @@
     ctx.fillStyle = c;
     ctx.fillRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h));
   }
+  // Versiones que dibujan en una capa offscreen (g).
+  function rectG(g, x, y, w, h, c) {
+    g.fillStyle = c;
+    g.fillRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h));
+  }
+  // Círculo fila a fila para conservar el aspecto de pixel art.
+  function blobG(g, cx, cy, r, c) {
+    g.fillStyle = c;
+    const R = Math.floor(r);
+    for (let dy = -R; dy <= R; dy++) {
+      const half = Math.floor(Math.sqrt(r * r - dy * dy));
+      g.fillRect(Math.round(cx - half), Math.round(cy + dy), half * 2, 1);
+    }
+  }
+  // Crea una capa offscreen una sola vez y la reutiliza en cada frame.
+  function makeLayer(w, h, paint) {
+    const c = document.createElement('canvas');
+    c.width = w;
+    c.height = h;
+    const g = c.getContext('2d');
+    g.imageSmoothingEnabled = false;
+    paint(g);
+    return c;
+  }
 
   // ---------- Recursos (PNG en assets/juego/) ----------
   const ASSET_DIR = 'assets/juego/';
@@ -52,7 +86,6 @@
     return img;
   };
   const IMG = {
-    fondo: loadImg('fondocontinuo.png'),
     nubeG: loadImg('nube-grande.png'),
     nubeP: loadImg('nube-pequena.png'),
     idle: loadImg('personaje-idle.png'),
@@ -106,7 +139,142 @@
     ctx.fillText(str, x, y);
   }
 
-  // ---------- Escenario ----------
+  // ---------- Paleta del escenario ----------
+  const C = {
+    stone: '#eadfc8', stoneSh: '#c9b99a', stoneDk: '#8f8168',
+    glass: '#5d8fbd', glassHi: '#a9d4f2', glassDk: '#2d4a66',
+    frame: '#3a5068', red: '#b3262b', navy: '#1d4e89', white: '#f4f4f4'
+  };
+  const PAL_NEAR = { trunk: '#6b4a2f', dark: '#1d6236', mid: '#2f8f4a', light: '#56b866' };
+
+  // ---------- Elementos del escenario (en capas) ----------
+  const LETTERS = {
+    F: ['11111', '10000', '11110', '10000', '10000'],
+    E: ['11111', '10000', '11110', '10000', '11111'],
+    N: ['10001', '11001', '10101', '10011', '10001']
+  };
+  function paintWordG(g, word, x, y, s, c) {
+    g.fillStyle = c;
+    let cx = x;
+    for (const ch of word) {
+      LETTERS[ch].forEach((row, ry) => {
+        for (let i = 0; i < 5; i++) {
+          if (row[i] === '1') g.fillRect(cx + i * s, y + ry * s, s, s);
+        }
+      });
+      cx += 6 * s;
+    }
+  }
+
+  // Ventana con marco y brillo.
+  function winG(g, x, y, w, h) {
+    rectG(g, x, y, w, h, C.frame);
+    rectG(g, x + 1, y + 1, w - 2, h - 2, C.glass);
+    rectG(g, x + 1, y + 1, 2, h - 2, C.glassHi);
+  }
+
+  // Edificio tipo Z: bloque largo con franja de vidrio y letrero FEN.
+  function laFEN(g, x, b) {
+    const w = 230, h = 78, y = b - h;
+    rectG(g, x, y, w, h, C.stone);
+    rectG(g, x - 4, y - 6, w + 8, 6, C.stoneSh);
+    paintWordG(g, 'FEN', x + w / 2 - 25, y + 10, 3, C.navy);
+    rectG(g, x + 10, y + 30, w - 20, 30, C.frame);
+    for (let i = 0; i < 7; i++) winG(g, x + 14 + i * 30, y + 33, 24, 24);
+    for (let i = 0; i < w; i += 38) rectG(g, x + i + 4, y + 62, 5, h - 62, C.stoneSh);
+    rectG(g, x + w / 2 - 8, b - 14, 16, 14, C.frame);
+  }
+
+  // Palacio de La Moneda, estilizado: pórtico con columnas, frontón y asta.
+  function laMoneda(g, x, b) {
+    const w = 200;
+    rectG(g, x, b - 62, w, 62, C.stone);
+    rectG(g, x - 2, b - 64, w + 4, 4, C.stoneSh);
+    // Pabellones de las esquinas.
+    rectG(g, x, b - 80, 36, 80, C.stone);
+    rectG(g, x + w - 36, b - 80, 36, 80, C.stone);
+    rectG(g, x - 2, b - 82, 40, 3, C.stoneSh);
+    rectG(g, x + w - 38, b - 82, 40, 3, C.stoneSh);
+    winG(g, x + 8, b - 70, 20, 28);
+    winG(g, x + w - 28, b - 70, 20, 28);
+    // Pórtico central.
+    rectG(g, x + 58, b - 96, 84, 96, C.stone);
+    rectG(g, x + 56, b - 98, 88, 4, C.stoneSh);
+    // Frontón triangular.
+    for (let r = 0; r < 14; r++) {
+      const wd = 6 + r * 6;
+      rectG(g, x + 100 - wd / 2, b - 110 + r, wd, 1, C.stone);
+    }
+    // Columnas.
+    for (let i = 0; i < 6; i++) rectG(g, x + 64 + i * 13, b - 92, 5, 88, C.stoneSh);
+    rectG(g, x + 92, b - 22, 16, 22, C.frame);
+    // Asta con bandera.
+    rectG(g, x + 99, b - 134, 2, 24, '#9aa6b2');
+    rectG(g, x + 101, b - 134, 14, 6, C.red);
+    rectG(g, x + 101, b - 128, 14, 4, C.white);
+  }
+
+  // Banco Central, estilizado: fachada de piedra con ventanas y columnas en la entrada.
+  function laBCCh(g, x, b) {
+    const w = 170;
+    rectG(g, x, b - 96, w, 96, C.stone);
+    rectG(g, x - 4, b - 100, w + 8, 6, C.stoneSh);
+    for (let i = 0; i < 7; i++) winG(g, x + 8 + i * 23, b - 84, 12, 40);
+    rectG(g, x + 54, b - 66, 58, 4, C.stoneSh);
+    for (const cx of [58, 68, 92, 102]) rectG(g, x + cx, b - 60, 5, 60, C.stoneSh);
+    rectG(g, x + 76, b - 40, 12, 40, C.glassDk);
+  }
+
+  // Edificio de departamentos o administrativo.
+  function edificioBloque(g, x, b, w, h) {
+    rectG(g, x, b - h, w, h, '#e4d8c3');
+    rectG(g, x - 3, b - h - 5, w + 6, 5, '#cbbda3');
+    for (let ry = b - h + 10; ry < b - 10; ry += 22) {
+      for (let cx = x + 8; cx < x + w - 12; cx += 18) winG(g, cx, ry, 10, 12);
+    }
+  }
+
+  // Torre de vidrio con cuadrícula.
+  function torreVidrio(g, x, b, w, h, c) {
+    rectG(g, x, b - h, w, h, c);
+    rectG(g, x, b - h, w, 3, '#e6eef3');
+    for (let ry = b - h + 8; ry < b - 6; ry += 9) {
+      for (let cx = x + 4; cx < x + w - 6; cx += 8) {
+        rectG(g, cx, ry, 6, 6, ((cx + ry) % 16 === 0) ? '#bfe3f7' : '#3c6a92');
+      }
+    }
+  }
+
+  function treeG(g, x, base, s, p) {
+    rectG(g, x - 3 * s, base - 24 * s, 6 * s, 24 * s, p.trunk);
+    blobG(g, x, base - 34 * s, 16 * s, p.dark);
+    blobG(g, x - 8 * s, base - 27 * s, 11 * s, p.mid);
+    blobG(g, x + 9 * s, base - 26 * s, 11 * s, p.mid);
+    blobG(g, x - 4 * s, base - 39 * s, 6 * s, p.light);
+  }
+
+  // Capa lejana: campus y edificios reconocibles, en una franja de 1280 px.
+  const cityFar = makeLayer(CITY_W, CITY_H, g => {
+    laMoneda(g, 20, CITY_H);
+    edificioBloque(g, 240, CITY_H, 70, 46);
+    laFEN(g, 330, CITY_H);
+    torreVidrio(g, 580, CITY_H, 58, 110, '#5f93c0');
+    laBCCh(g, 660, CITY_H);
+    edificioBloque(g, 850, CITY_H, 84, 56);
+    torreVidrio(g, 950, CITY_H, 48, 128, '#4f7fae');
+    edificioBloque(g, 1010, CITY_H, 130, 60);
+    torreVidrio(g, 1150, CITY_H, 50, 118, '#6fa3cf');
+    edificioBloque(g, 1210, CITY_H, 70, 40);
+  });
+
+  // Capa cercana: árboles, en una franja de 640 px.
+  const nearTrees = [[30, 0.8], [110, 0.7], [200, 0.9], [290, 0.75], [380, 0.85], [470, 0.7], [560, 0.9]];
+  const nearLayer = makeLayer(NEAR_W, NEAR_H, g => {
+    for (const [x, s] of nearTrees) {
+      for (const off of [-NEAR_W, 0, NEAR_W]) treeG(g, x + off, NEAR_H, s, PAL_NEAR);
+    }
+  });
+
   // Nubes: se mueven a velocidades distintas (parallax suave).
   const CLOUDS = [
     { img: 'nubeG', x: 40,  y: 44,  speed: 0.12, w: 110 },
@@ -131,15 +299,15 @@
       }
     }
 
-    // Campus: se repite en horizontal a velocidad de fondo lejano.
-    if (ok(IMG.fondo)) {
-      const s = BG_H / IMG.fondo.naturalHeight;
-      const dw = IMG.fondo.naturalWidth * s;
-      const off = -wrap(worldOffset * 0.5, dw);
-      for (let x = off; x < W; x += dw) {
-        ctx.drawImage(IMG.fondo, Math.round(x), GROUND_Y - BG_H, Math.ceil(dw), BG_H);
-      }
-    }
+    // Skyline lejano: se desplaza a velocidad lenta.
+    const farOff = -wrap(worldOffset * 0.4, CITY_W);
+    ctx.drawImage(cityFar, Math.round(farOff), GROUND_Y - CITY_H);
+    ctx.drawImage(cityFar, Math.round(farOff + CITY_W), GROUND_Y - CITY_H);
+
+    // Árboles cercanos: se desplazan más rápido.
+    const nearOff = -wrap(worldOffset * 0.75, NEAR_W);
+    ctx.drawImage(nearLayer, Math.round(nearOff), GROUND_Y - NEAR_H);
+    ctx.drawImage(nearLayer, Math.round(nearOff + NEAR_W), GROUND_Y - NEAR_H);
 
     // Suelo: se repite en horizontal a la misma velocidad que las tuberías.
     if (ok(IMG.suelo)) {
@@ -171,6 +339,9 @@
       try { localStorage.setItem(RECORD_KEY, String(score)); } catch (_) {}
     }
   }
+  const levelIndex = () => Math.min(LEVELS.length - 1, Math.floor(score / 20));
+  const currentLevel = () => LEVELS[levelIndex()];
+
   function resetGame() {
     player = { y: 145, vy: 0 };
     pipes = [];
@@ -210,7 +381,7 @@
     const minCenter = 112;
     const maxCenter = GROUND_Y - 112;
     const center = minCenter + Math.random() * (maxCenter - minCenter);
-    pipes.push({ x: W + 8, center, scored: false });
+    pipes.push({ x: W + 8, center, gap: currentLevel().gap, scored: false });
   }
   function rectsOverlap(a, b) {
     return a.x < b.x + b.w && a.x + a.w > b.x &&
@@ -233,19 +404,20 @@
   }
   function update(dt) {
     if (state !== 'playing') return;
+    const lv = currentLevel();
     const step = Math.min(dt / 16.667, 2.2);
     frame += step;
-    worldOffset += PIPE_SPEED * step;
+    worldOffset += lv.speed * step;
 
     player.vy += GRAVITY * step;
     player.y += player.vy * step;
 
-    if (frame % 105 < step) addPipe();
+    if (frame % lv.spacing < step) addPipe();
 
     for (const p of pipes) {
-      p.x -= PIPE_SPEED * step;
-      const topH = p.center - GAP / 2;
-      const bottomY = p.center + GAP / 2;
+      p.x -= lv.speed * step;
+      const topH = p.center - p.gap / 2;
+      const bottomY = p.center + p.gap / 2;
       const playerBox = {
         x: PLAYER_X + HITBOX.x, y: player.y + HITBOX.y,
         w: HITBOX.w, h: HITBOX.h
@@ -299,8 +471,8 @@
   }
 
   function drawPipe(p) {
-    const topH = p.center - GAP / 2;
-    const bottomY = p.center + GAP / 2;
+    const topH = p.center - p.gap / 2;
+    const bottomY = p.center + p.gap / 2;
     if (!ok(IMG.tuberia)) {
       drawPipeFallback(p, topH, bottomY);
       return;
@@ -377,6 +549,7 @@
 
   function drawHud() {
     hudPanel(`PUNTOS: ${score}`, 14, 12, 'left');
+    hudPanel(`NIVEL ${levelIndex() + 1}`, 14, 50, 'left');
     hudPanel(`RÉCORD: ${Math.max(getRecord(), score)}`, W - 14, 12, 'right');
     for (let i = 0; i < LIVES_MAX; i++) {
       const x = W - 14 - 21 - (LIVES_MAX - 1 - i) * 27;
