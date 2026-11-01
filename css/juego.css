@@ -1,0 +1,38 @@
+/* Flappy DeGregoriano — estilos aislados del resto del sitio */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+.dialog--juego {
+  width: min(900px, 96vw);
+  max-width: 900px;
+  padding: clamp(14px, 2.5vw, 24px);
+  border: 2px solid var(--ink, #202020);
+  border-radius: 18px;
+  background: var(--cream, #fffaf0);
+  color: var(--ink, #202020);
+  overflow: visible;
+}
+.dialog--juego::backdrop { background: rgba(10, 20, 35, .72); backdrop-filter: blur(3px); }
+.dialog--juego .dialog__close-wrap { position: absolute; top: 8px; right: 8px; z-index: 5; }
+.dialog--juego .dialog__close { width: 34px; height: 34px; border-radius: 50%; }
+.juego-shell { width: 100%; }
+.juego-heading { text-align: center; padding: 2px 42px 12px; }
+.juego-kicker { margin: 0 0 4px; color: #3979a9; font-size: .68rem; font-weight: 800; letter-spacing: .16em; }
+.juego-heading h2 { margin: 0; font-size: clamp(1.35rem, 4vw, 2rem); line-height: 1.1; }
+.juego-subtitle { margin: 6px 0 0; color: var(--muted, #6b7280); font-size: .9rem; }
+.juego-stage { width: 100%; overflow: hidden; border: 3px solid #18283b; border-radius: 9px; background: #55a9ed; box-shadow: 0 5px 0 rgba(24,40,59,.18); }
+#juego-canvas {
+  display: block; width: 100%; height: auto; aspect-ratio: 640 / 360;
+  image-rendering: pixelated; image-rendering: crisp-edges;
+  touch-action: none; outline: none; cursor: pointer;
+}
+#juego-canvas:focus-visible { box-shadow: inset 0 0 0 3px #ffd45b; }
+/* El HUD visible está dentro del canvas; este bloque queda solo para lectores de pantalla. */
+.juego-hud {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+.juego-help { margin: 5px 0 0; text-align: center; color: var(--muted, #6b7280); font-size: .78rem; }
+@media (max-width: 520px) {
+  .dialog--juego { width: 98vw; padding: 10px; }
+  .juego-heading { padding-bottom: 9px; }
+}
