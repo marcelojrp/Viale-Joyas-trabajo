@@ -16,13 +16,13 @@
 html { scroll-behavior: smooth; scroll-padding-top: 140px; }
 body {
   margin: 0;
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: "Montserrat", "Helvetica Neue", Arial, sans-serif;
   color: var(--ink);
   background: var(--white);
   line-height: 1.6;
 }
 img { max-width: 100%; display: block; }
-h1, h2, h3 { font-family: Georgia, "Times New Roman", serif; font-weight: 400; line-height: 1.2; }
+h1, h2, h3 { font-family: "Montserrat", sans-serif; font-weight: 300; letter-spacing: 0.04em; line-height: 1.2; }
 h2 { font-size: 2rem; margin: 0 0 0.5rem; }
 a { color: inherit; }
 .container { width: min(1140px, 92%); margin: 0 auto; }
@@ -147,7 +147,7 @@ a { color: inherit; }
   display: flex; align-items: center; justify-content: center;
   height: 110px; background: var(--white); border: 1px solid var(--gold-light);
   border-radius: var(--radius); text-decoration: none;
-  font-family: Georgia, serif; font-size: 1.2rem; transition: transform 0.2s, background 0.2s;
+  font-family: "Montserrat", sans-serif; font-weight: 300; letter-spacing: 0.04em; font-size: 1.2rem; transition: transform 0.2s, background 0.2s;
 }
 .style-tile:hover { transform: translateY(-3px); background: var(--cream); }
 
@@ -209,6 +209,35 @@ a { color: inherit; }
 .qr-output { margin-top: 2rem; text-align: center; }
 .qr-output #qr-canvas { display: inline-block; padding: 1rem; background: var(--white); border: 1px solid var(--cream-dark); border-radius: var(--radius); }
 .qr-caption { word-break: break-all; font-size: 0.85rem; color: var(--muted); }
+
+/* ===== Iconos y favoritos ===== */
+.action__icon { display: flex; justify-content: center; align-items: center; height: 24px; }
+.action__icon svg { display: block; }
+.heart-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  flex: 0 0 42px; height: 40px; cursor: pointer;
+  background: var(--white); color: var(--gold);
+  border: 1px solid var(--gold-light); border-radius: 8px;
+  transition: background 0.2s;
+}
+.heart-btn:hover { background: var(--cream); }
+.heart-btn svg { display: block; }
+.card__photo {
+  width: 100%; height: 160px; object-fit: contain;
+  background: var(--cream); border-radius: 8px;
+}
+
+/* ===== Listas, acciones y redes ===== */
+.item-list li { align-items: center; gap: 0.6rem; }
+.item-list li span:first-child { flex: 1; }
+.item-actions { display: flex; gap: 0.3rem; align-items: center; }
+.mini-btn {
+  font: inherit; font-size: 0.8rem; cursor: pointer;
+  border: 1px solid var(--gold-light); background: var(--white);
+  color: var(--gold); border-radius: 6px; padding: 0.1rem 0.5rem;
+}
+.mini-btn:hover { background: var(--cream); }
+.footer a { display: block; margin-top: 0.6rem; }
 
 /* ===== Responsive ===== */
 @media (max-width: 800px) {
